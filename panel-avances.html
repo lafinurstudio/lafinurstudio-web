@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel de Avances · Lafinur Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.0/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.0/vfs_fonts.js"></script>
+<style>
+:root {
+  --cal: #F2EFE9;
+  --papel: #FBFAF7;
+  --granito: #2E3134;
+  --granito-2: #6A6F74;
+  --roble: #B08147;
+  --cobre: #9C5B3C;
+  --verde: #4A6B5F;
+  --verde-2: #3d5849;
+  --verde-bg: #E7EDE9;
+  --linea: #E4DFD5;
+  --linea-2: #D6D0C4;
+  --amber-bg: #F5EEE2;
+  --sombra-sm: 0 2px 8px rgba(46,49,52,.05);
+  --sombra: 0 10px 30px -12px rgba(46,49,52,.14);
+  --sombra-lg: 0 22px 50px -20px rgba(46,49,52,.22);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background:
+    radial-gradient(1200px 600px at 100% -10%, rgba(176,129,71,.06), transparent 60%),
+    radial-gradient(900px 500px at -10% 10%, rgba(74,107,95,.06), transparent 55%),
+    var(--cal);
+  color: var(--granito);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* TOP BAR */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px;
+  background: rgba(251,250,247,.82);
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  border-bottom: 1px solid var(--linea);
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 100px;
+  border: 1px solid var(--linea-2);
+  background: white;
+  color: var(--granito);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  box-shadow: var(--sombra-sm);
+}
+.back-btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--cobre);
+  box-shadow: var(--sombra);
+}
+.back-btn .arrow { transition: transform .18s ease; }
+.back-btn:hover .arrow { transform: translateX(-3px); }
+
+.brand {
+  font-family: 'Fraunces', serif;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: .01em;
+  color: var(--granito);
+}
+.brand span { color: var(--cobre); }
+
+/* HERO / HEADER */
+header {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 56px 22px 20px;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--cobre);
+  margin-bottom: 18px;
+}
+.eyebrow::before,
+.eyebrow::after {
+  content: "";
+  width: 22px;
+  height: 1px;
+  background: var(--linea-2);
+}
+
+header h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(38px, 7vw, 64px);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -.01em;
+  margin-bottom: 14px;
+}
+
+header .subtitle {
+  font-size: 15px;
+  color: var(--granito-2);
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 22px;
+  padding: 8px 16px;
+  border-radius: 100px;
+  background: var(--verde-bg);
+  color: var(--verde);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.status-pill .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--verde);
+  box-shadow: 0 0 0 0 rgba(74,107,95,.5);
+  animation: pulse 2.4s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(74,107,95,.45); }
+  70% { box-shadow: 0 0 0 9px rgba(74,107,95,0); }
+  100% { box-shadow: 0 0 0 0 rgba(74,107,95,0); }
+}
+
+/* CONTAINER */
+.container {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 20px 22px 40px;
+}
+
+/* TABS — pill bar */
+.tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 5px;
+  margin: 8px auto 40px;
+  background: white;
+  border: 1px solid var(--linea);
+  border-radius: 100px;
+  box-shadow: var(--sombra-sm);
+  position: sticky;
+  top: 72px;
+  z-index: 40;
+}
+.tabs-wrap { text-align: center; }
+
+.tab {
+  padding: 11px 22px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--granito-2);
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  border-radius: 100px;
+  transition: color .2s ease, background .2s ease;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--granito); }
+.tab.active {
+  color: white;
+  background: var(--verde);
+  box-shadow: 0 6px 16px -6px rgba(74,107,95,.6);
+}
+
+.tab-content { display: none; animation: fade .4s ease; }
+.tab-content.active { display: block; }
+@keyframes fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section-title {
+  font-family: 'Fraunces', serif;
+  font-size: 26px;
+  font-weight: 400;
+  margin-bottom: 6px;
+  color: var(--granito);
+}
+.section-desc {
+  font-size: 14px;
+  color: var(--granito-2);
+  margin-bottom: 28px;
+  max-width: 60ch;
+}
+
+/* TIMELINE OF FASES */
+.timeline {
+  position: relative;
+  display: grid;
+  gap: 22px;
+}
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 27px;
+  top: 12px;
+  bottom: 12px;
+  width: 2px;
+  background: linear-gradient(var(--linea-2), var(--linea-2));
+  z-index: 0;
+}
+
+.fase {
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 20px;
+  z-index: 1;
+}
+
+.node {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--linea-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--granito-2);
+  box-shadow: var(--sombra-sm);
+  transition: all .25s ease;
+}
+.fase.done .node {
+  background: var(--verde);
+  border-color: var(--verde);
+  color: white;
+}
+.fase.current .node {
+  border-color: var(--cobre);
+  color: var(--cobre);
+  box-shadow: 0 0 0 5px rgba(156,91,60,.12);
+}
+
+.fase-card {
+  background: var(--papel);
+  border: 1px solid var(--linea);
+  border-radius: 24px;
+  padding: 26px 26px 22px;
+  box-shadow: var(--sombra-sm);
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+.fase-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--sombra);
+}
+
+.fase-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+.fase-title {
+  font-family: 'Fraunces', serif;
+  font-size: 18.5px;
+  font-weight: 500;
+  color: var(--granito);
+  line-height: 1.25;
+}
+.fase-duracion {
+  display: inline-block;
+  margin-top: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .04em;
+  color: var(--roble);
+}
+.fase-desc {
+  font-size: 13.5px;
+  color: var(--granito-2);
+  margin: 12px 0 18px;
+}
+
+.fase-status {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 13px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.fase-status .s-dot { width: 6px; height: 6px; border-radius: 50%; }
+.fase-status.pending { background: #EFECE4; color: var(--granito-2); }
+.fase-status.pending .s-dot { background: var(--granito-2); }
+.fase-status.completed { background: var(--verde-bg); color: var(--verde); }
+.fase-status.completed .s-dot { background: var(--verde); }
+
+/* ARCHIVOS */
+.archivos-section { margin-top: 4px; }
+.archivos-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--granito);
+  margin-bottom: 10px;
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.upload-area {
+  border: 1.5px dashed var(--linea-2);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s ease;
+  background: rgba(255,255,255,.6);
+}
+.upload-area:hover {
+  border-color: var(--verde);
+  background: var(--verde-bg);
+}
+.upload-area input { display: none; }
+.upload-text {
+  font-size: 13px;
+  color: var(--granito-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+.upload-text .up-ico {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid var(--linea-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--verde);
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.archivos-list {
+  margin-top: 12px;
+  display: grid;
+  gap: 8px;
+}
+.archivo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: white;
+  border: 1px solid var(--linea);
+  border-radius: 12px;
+  border-left: 3px solid var(--verde);
+  font-size: 13px;
+}
+.archivo-nombre {
+  flex: 1;
+  word-break: break-all;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+.archivo-nombre .file-ico { color: var(--cobre); flex-shrink: 0; }
+.btn-eliminar {
+  background: transparent;
+  border: 1px solid var(--linea-2);
+  padding: 6px 12px;
+  border-radius: 100px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--cobre);
+  transition: all .18s ease;
+  flex-shrink: 0;
+}
+.btn-eliminar:hover { background: var(--amber-bg); border-color: var(--cobre); }
+.contador { font-size: 11px; color: var(--granito-2); margin-top: 10px; }
+
+/* CARD genérica (presupuestos / contrato) */
+.card {
+  background: var(--papel);
+  border: 1px solid var(--linea);
+  border-radius: 24px;
+  padding: 30px;
+  box-shadow: var(--sombra-sm);
+}
+.note {
+  padding: 16px 18px;
+  background: var(--verde-bg);
+  border-radius: 16px;
+  font-size: 13px;
+  color: var(--verde);
+  margin-bottom: 22px;
+}
+
+/* CONTRATO */
+.contrato-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px 24px;
+  background: white;
+  border: 1px solid var(--linea);
+  padding: 22px 24px;
+  border-radius: 18px;
+  margin-bottom: 22px;
+  font-size: 13.5px;
+}
+.contrato-info p { padding: 7px 0; }
+.contrato-info strong { color: var(--cobre); font-weight: 600; display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 2px; }
+
+.contenido-lista {
+  padding: 20px 22px;
+  background: white;
+  border: 1px solid var(--linea);
+  border-radius: 18px;
+  margin-bottom: 24px;
+}
+.contenido-lista .cl-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--granito);
+  margin-bottom: 14px;
+}
+.contenido-lista ul { list-style: none; display: grid; gap: 9px; }
+.contenido-lista li {
+  font-size: 13.5px;
+  color: var(--granito-2);
+  display: flex;
+  gap: 11px;
+  align-items: center;
+}
+.contenido-lista li .num {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--amber-bg);
+  color: var(--cobre);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* BOTONES */
+.btn {
+  padding: 13px 26px;
+  border: none;
+  border-radius: 100px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+  font-family: 'Inter', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+.btn-primary {
+  background: var(--verde);
+  color: white;
+  box-shadow: 0 10px 24px -10px rgba(74,107,95,.7);
+}
+.btn-primary:hover { background: var(--verde-2); transform: translateY(-2px); }
+
+/* FOOTER */
+footer {
+  max-width: 1040px;
+  margin: 40px auto 0;
+  padding: 34px 22px 48px;
+  text-align: center;
+  border-top: 1px solid var(--linea);
+}
+footer .f-mark {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  color: var(--granito);
+  margin-bottom: 6px;
+}
+footer p { font-size: 12px; color: var(--granito-2); }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  header { padding-top: 40px; }
+  .tabs { top: 68px; width: calc(100% - 44px); overflow-x: auto; justify-content: flex-start; }
+  .tab { padding: 10px 16px; font-size: 12.5px; }
+  .fase { grid-template-columns: 44px 1fr; gap: 14px; }
+  .node { width: 44px; height: 44px; font-size: 17px; }
+  .timeline::before { left: 21px; }
+  .fase-card { padding: 20px; border-radius: 20px; }
+  .contrato-info { grid-template-columns: 1fr; }
+  .brand { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <a class="back-btn" href="obrasencurso.html">
+    <span class="arrow">←</span> Volver al inicio
+  </a>
+  <div class="brand">Lafinur <span>Studio</span></div>
+</div>
+
+<!-- HERO -->
+<header>
+  <div class="eyebrow">Seguimiento de proyecto</div>
+  <h1 id="hero-nombre">—</h1>
+  <div class="subtitle" id="hero-subtitle">—</div>
+  <div class="status-pill" id="hero-status"><span class="dot"></span> <span id="hero-status-text">—</span></div>
+</header>
+
+<!-- TABS -->
+<div class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('cronograma', this)">Cronograma</button>
+    <button class="tab" onclick="switchTab('presupuestos', this)">Presupuestos</button>
+    <button class="tab" onclick="switchTab('contrato', this)">Contrato</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+
+  <!-- PESTAÑA 1: CRONOGRAMA -->
+  <div id="cronograma" class="tab-content active">
+    <div class="section-title">Cronograma y fases de obra</div>
+    <p class="section-desc">El recorrido completo del proyecto, fase por fase. Cada etapa reúne sus archivos, planos y registros de avance.</p>
+    <div class="timeline" id="fasesContainer"></div>
+  </div>
+
+  <!-- PESTAÑA 2: PRESUPUESTOS -->
+  <div id="presupuestos" class="tab-content">
+    <div class="section-title">Presupuestos</div>
+    <p class="section-desc">Aquí encontrás y podés adjuntar los documentos de presupuesto del proyecto.</p>
+    <div class="card">
+      <label class="archivos-label">Documentos (máximo 5)</label>
+      <div class="upload-area" onclick="document.getElementById('file-presupuestos').click()">
+        <input type="file" id="file-presupuestos" onchange="adjuntarPresupuesto(event)">
+        <div class="upload-text"><span class="up-ico">↑</span> Subí un archivo o arrastralo aquí</div>
+      </div>
+      <div class="archivos-list" id="presupuestos-list"></div>
+      <p class="contador" id="presupuestos-contador">0/5 archivos</p>
+    </div>
+  </div>
+
+  <!-- PESTAÑA 3: CONTRATO -->
+  <div id="contrato" class="tab-content">
+    <div class="section-title">Documento del contrato</div>
+    <p class="section-desc">Contrato aceptado por el cliente. Podés descargar una copia completa en PDF.</p>
+    <div class="card">
+      <div class="contrato-info">
+        <p><strong>Cliente</strong> <span id="ci-cliente">—</span></p>
+        <p><strong>Obra</strong> <span id="ci-obra">—</span></p>
+        <p><strong>Ubicación</strong> <span id="ci-ubicacion">—</span></p>
+        <p><strong>Estado</strong> Aceptado por el cliente</p>
+        <p><strong>Fecha de aceptación</strong> <span id="fechaAceptacion">-</span></p>
+      </div>
+
+      <div class="contenido-lista">
+        <div class="cl-title">Contenido del contrato</div>
+        <ul>
+          <li><span class="num">1</span> Identificación del trabajo</li>
+          <li><span class="num">2</span> Fases del proyecto</li>
+          <li><span class="num">3</span> Alcance de la obra</li>
+          <li><span class="num">4</span> Honorarios y presupuestos</li>
+          <li><span class="num">5</span> Métodos de pago</li>
+          <li><span class="num">6</span> Duración de la obra</li>
+          <li><span class="num">7</span> Garantía y responsabilidad</li>
+        </ul>
+      </div>
+
+      <button class="btn btn-primary" onclick="descargarContratoCompleto()"><span>↓</span> Descargar contrato completo</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-mark">Lafinur Studio</div>
+  <p>Panel de seguimiento exclusivo para cliente · © 2026 Diseño y Arquitectura</p>
+</footer>
+
+<script>
+/* ============================================================
+   CONFIGURACIÓN POR OBRA
+   Cada proyecto define: nombre, subtítulo, ubicación, cliente,
+   estado, clave (para PDF y storage) y sus fases propias.
+   Para agregar/editar una obra, modificá este objeto.
+   ============================================================ */
+const PROYECTOS = {
+  scalabrini: {
+    nombre: 'Scalabrini Ortiz',
+    subtitle: 'Remodelación de cocina y lavadero · Palermo',
+    ubicacion: 'Scalabrini Ortiz, Palermo',
+    cliente: 'Lorena Domb',
+    obraLabel: 'Remodelación cocina y lavadero',
+    estado: 'Obra en curso',
+    fases: [
+      { numero: 1, nombre: 'Definiciones, diseño y presupuesto', descripcion: 'Planos técnicos, renders, especificaciones y presupuesto detallado aprobados por el cliente.', duracion: 'Sin obra en casa' },
+      { numero: 2, nombre: 'Fabricación', descripcion: 'Fabricación de muebles a medida y adquisición de materiales según especificaciones.', duracion: 'Sin obra en casa' },
+      { numero: 3, nombre: 'Modificaciones e instalaciones', descripcion: 'Demolición, desmontaje e instalaciones técnicas (cañerías, electricidad, gas).', duracion: 'Primera semana de obra' },
+      { numero: 4, nombre: 'Terminar superficies', descripcion: 'Revestimientos, impermeabilización, pintura y piso.', duracion: 'Segunda semana de obra' },
+      { numero: 5, nombre: 'Montar y entregar', descripcion: 'Montaje de muebles, instalación de complementos y entrega final.', duracion: 'Tercera semana de obra' }
+    ]
+  },
+  voltaire: {
+    nombre: 'Voltaire',
+    subtitle: 'Proyecto de interiorismo · Palermo',
+    ubicacion: 'Voltaire, Palermo',
+    cliente: 'A completar',
+    obraLabel: 'A completar',
+    estado: 'Obra en curso',
+    fases: [
+      { numero: 1, nombre: 'Impermeabilización', descripcion: 'Impermeabilización de terraza interna y externa.', duracion: 'Completado', completa: true },
+      { numero: 2, nombre: 'Arreglos internos', descripcion: 'Arreglos y trabajos internos del espacio.', duracion: 'En curso' },
+      { numero: 3, nombre: 'Mobiliario', descripcion: 'Diseño, fabricación y colocación del mobiliario.', duracion: 'A definir' },
+      { numero: 4, nombre: 'Pintura', descripcion: 'Pintura y terminaciones finales.', duracion: 'A definir' }
+    ]
+  },
+  malvinas: {
+    nombre: 'Malvinas Argentinas',
+    subtitle: 'Proyecto de obra · San Justo',
+    ubicacion: 'Malvinas Argentinas, San Justo',
+    cliente: 'A completar',
+    obraLabel: 'A completar',
+    estado: 'Obra en curso',
+    fases: [
+      { numero: 1, nombre: 'Presupuesto estimado', descripcion: 'Presupuesto estimado del proyecto.', duracion: 'Completo', completa: true },
+      { numero: 2, nombre: 'Anteproyecto y proyecto', descripcion: 'Desarrollo del anteproyecto y proyecto ejecutivo.', duracion: 'En curso' },
+      { numero: 3, nombre: 'Gerenciamiento', descripcion: 'Gerenciamiento y coordinación de la obra.', duracion: 'A definir' },
+      { numero: 4, nombre: 'Ejecución', descripcion: 'Ejecución de la obra.', duracion: 'A definir' }
+    ]
+  },
+  pilar: {
+    nombre: 'Pilar',
+    subtitle: 'Proyecto de obra · Pilar, Buenos Aires',
+    ubicacion: 'Pilar, Buenos Aires',
+    cliente: 'A completar',
+    obraLabel: 'A completar',
+    estado: 'Obra en curso',
+    fases: [
+      { numero: 1, nombre: 'Diseño y presupuesto', descripcion: 'A completar según el proyecto Pilar.', duracion: 'A definir' },
+      { numero: 2, nombre: 'Fabricación', descripcion: 'A completar.', duracion: 'A definir' },
+      { numero: 3, nombre: 'Ejecución de obra', descripcion: 'A completar.', duracion: 'A definir' },
+      { numero: 4, nombre: 'Terminaciones', descripcion: 'A completar.', duracion: 'A definir' },
+      { numero: 5, nombre: 'Entrega final', descripcion: 'A completar.', duracion: 'A definir' }
+    ]
+  },
+  ciudadpaz: {
+    nombre: 'Ciudad de la Paz',
+    subtitle: 'Proyecto finalizado · La Boca',
+    ubicacion: 'Ciudad de la Paz, La Boca',
+    cliente: 'A completar',
+    obraLabel: 'A completar',
+    estado: 'Obra terminada',
+    fases: [
+      { numero: 1, nombre: 'Diseño y presupuesto', descripcion: 'A completar según el proyecto Ciudad de la Paz.', duracion: 'Completada' },
+      { numero: 2, nombre: 'Fabricación', descripcion: 'A completar.', duracion: 'Completada' },
+      { numero: 3, nombre: 'Ejecución de obra', descripcion: 'A completar.', duracion: 'Completada' },
+      { numero: 4, nombre: 'Entrega final', descripcion: 'A completar.', duracion: 'Completada' }
+    ]
+  }
+};
+
+/* ============================================================
+   RESOLVER QUÉ OBRA MOSTRAR
+   1) Por parámetro de URL: panel-avances.html?obra=voltaire
+   2) Si no hay, por localStorage 'obraActual' (lo setea el mapa)
+   3) Fallback: scalabrini
+   ============================================================ */
+function getObraKey() {
+  const params = new URLSearchParams(window.location.search);
+  const fromUrl = params.get('obra');
+  if (fromUrl && PROYECTOS[fromUrl]) return fromUrl;
+  const fromStorage = localStorage.getItem('obraActual');
+  if (fromStorage && PROYECTOS[fromStorage]) return fromStorage;
+  return 'scalabrini';
+}
+
+const OBRA_KEY = getObraKey();
+const PROYECTO = PROYECTOS[OBRA_KEY];
+const fases = PROYECTO.fases;
+
+/* Claves de almacenamiento separadas por obra */
+function kArchivos(faseNum) { return `archivos_${OBRA_KEY}_fase_${faseNum}`; }
+function kPresupuestos() { return `presupuestos_${OBRA_KEY}`; }
+function kContrato() { return `contrato_${OBRA_KEY}_aceptado_cliente`; }
+
+/* ============================================================
+   CONTROL DE ACCESO
+   El panel se habilita si el cliente aceptó el contrato de ESTA obra.
+   ============================================================ */
+const clienteAcepto = localStorage.getItem(kContrato()) === 'true';
+if(!clienteAcepto) {
+  document.body.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#F2EFE9;text-align:center;padding:22px">
+      <div style="max-width:420px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#9C5B3C;margin-bottom:16px">Acceso restringido</div>
+        <h1 style="font-family:'Fraunces',serif;font-size:36px;font-weight:400;margin-bottom:14px;color:#2E3134">Este panel aún no está habilitado</h1>
+        <p style="font-size:15px;color:#6A6F74;margin-bottom:28px">Se habilita automáticamente cuando aceptás el contrato de la obra.</p>
+        <a href="obrasencurso.html" style="display:inline-flex;align-items:center;gap:8px;padding:13px 26px;background:#4A6B5F;color:white;text-decoration:none;border-radius:100px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;box-shadow:0 10px 24px -10px rgba(74,107,95,.7)">← Volver al inicio</a>
+      </div>
+    </div>
+  `;
+  throw new Error('Acceso denegado');
+}
+
+/* ============================================================
+   PINTAR DATOS DE LA OBRA EN LA PÁGINA
+   ============================================================ */
+function pintarObra() {
+  document.title = `Panel de Avances · ${PROYECTO.nombre}`;
+  document.getElementById('hero-nombre').textContent = PROYECTO.nombre;
+  document.getElementById('hero-subtitle').textContent = PROYECTO.subtitle;
+  document.getElementById('hero-status-text').textContent = PROYECTO.estado;
+  document.getElementById('ci-cliente').textContent = PROYECTO.cliente;
+  document.getElementById('ci-obra').textContent = PROYECTO.obraLabel;
+  document.getElementById('ci-ubicacion').textContent = PROYECTO.ubicacion;
+}
+
+// CAMBIAR PESTAÑA
+function switchTab(tabName, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(tabName).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(tabName === 'cronograma') renderizarFases();
+}
+
+// RENDERIZAR FASES
+function renderizarFases() {
+  const container = document.getElementById('fasesContainer');
+  container.innerHTML = '';
+
+  fases.forEach(fase => {
+    const archivos = obtenerArchivos(fase.numero);
+    const completa = fase.completa === true || archivos.length > 0;
+
+    const faseDiv = document.createElement('div');
+    faseDiv.className = 'fase' + (completa ? ' done' : '');
+    faseDiv.id = `fase-${fase.numero}`;
+
+    faseDiv.innerHTML = `
+      <div class="node">${completa ? '✓' : fase.numero}</div>
+      <div class="fase-card">
+        <div class="fase-top">
+          <div>
+            <div class="fase-title">Fase ${fase.numero} · ${fase.nombre}</div>
+            <span class="fase-duracion">${fase.duracion}</span>
+          </div>
+          <span class="fase-status ${completa ? 'completed' : 'pending'}">
+            <span class="s-dot"></span>${fase.completa === true ? 'Completado' : (completa ? 'Con avances' : 'En espera')}
+          </span>
+        </div>
+
+        <p class="fase-desc">${fase.descripcion}</p>
+
+        <div class="archivos-section">
+          <label class="archivos-label">Archivos adjuntos (máximo 3)</label>
+          <div class="upload-area" onclick="document.getElementById('file-${fase.numero}').click()">
+            <input type="file" id="file-${fase.numero}" onchange="adjuntarArchivo(${fase.numero}, event)">
+            <div class="upload-text"><span class="up-ico">↑</span> Subí un archivo o arrastralo aquí</div>
+          </div>
+          <div class="archivos-list" id="archivos-${fase.numero}">
+            ${archivos.map((arch, idx) => `
+              <div class="archivo-item">
+                <span class="archivo-nombre"><span class="file-ico">▤</span>${arch.nombre}</span>
+                <button class="btn-eliminar" onclick="eliminarArchivo(${fase.numero}, ${idx})">Eliminar</button>
+              </div>
+            `).join('')}
+          </div>
+          <p class="contador">${archivos.length}/3 archivos</p>
+        </div>
+      </div>
+    `;
+    container.appendChild(faseDiv);
+  });
+}
+
+// ADJUNTAR ARCHIVO
+function adjuntarArchivo(faseNum, event) {
+  const file = event.target.files[0];
+  if(!file) return;
+  const archivos = obtenerArchivos(faseNum);
+  if(archivos.length >= 3) { alert('Máximo 3 archivos por fase'); return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    archivos.push({ nombre: file.name });
+    guardarArchivos(faseNum, archivos);
+    renderizarFases();
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ELIMINAR ARCHIVO
+function eliminarArchivo(faseNum, index) {
+  const archivos = obtenerArchivos(faseNum);
+  archivos.splice(index, 1);
+  guardarArchivos(faseNum, archivos);
+  renderizarFases();
+}
+
+// OBTENER / GUARDAR ARCHIVOS (por obra + fase)
+function obtenerArchivos(faseNum) {
+  const stored = localStorage.getItem(kArchivos(faseNum));
+  if(!stored) return [];
+  try { return JSON.parse(stored); } catch { return []; }
+}
+function guardarArchivos(faseNum, archivos) {
+  const archivosLimpios = archivos.map(arch => ({ nombre: arch.nombre }));
+  localStorage.setItem(kArchivos(faseNum), JSON.stringify(archivosLimpios));
+}
+
+// DESCARGAR CONTRATO COMPLETO (usa datos de la obra actual)
+function descargarContratoCompleto() {
+  const fecha = new Date().toLocaleDateString('es-AR');
+  const docDefinition = {
+    pageSize: 'A4',
+    pageMargins: [15, 15, 15, 15],
+    content: [
+      { text: `CONTRATO ${PROYECTO.nombre.toUpperCase()}`, fontSize: 16, bold: true, alignment: 'center', margin: [0, 0, 0, 5] },
+      { text: 'Proyecto de Remodelación - Diseño y Arquitectura', fontSize: 10, color: '#666666', alignment: 'center', margin: [0, 0, 0, 15] },
+      { table: { headerRows: 0, widths: ['*', '*'], body: [
+        [ { text: `Cliente: ${PROYECTO.cliente}`, fontSize: 10 }, { text: `Obra: ${PROYECTO.obraLabel}`, fontSize: 10 } ],
+        [ { text: `Ubicación: ${PROYECTO.ubicacion}`, fontSize: 10 }, { text: `Fecha: ${fecha}`, fontSize: 10 } ]
+      ] }, margin: [0, 0, 0, 15] },
+      { text: '1. FASES DEL PROYECTO', fontSize: 11, bold: true, margin: [0, 10, 0, 5] },
+      { ul: fases.map(f => `Fase ${f.numero}: ${f.nombre}`), margin: [0, 0, 0, 10] },
+      { text: '2. MÉTODOS DE PAGO', fontSize: 11, bold: true, margin: [0, 10, 0, 5] },
+      { text: 'Efectivo, Transferencia bancaria, Pesos o dólares (cotización Banco Nación).', fontSize: 10, margin: [0, 0, 0, 10] },
+      { text: '3. GARANTÍA Y RESPONSABILIDAD', fontSize: 11, bold: true, margin: [0, 10, 0, 5] },
+      { text: 'Trabajo de calidad profesional. No responsable por: cambios de mercado, variaciones de color, imprevistos estructurales, decisiones fuera del acuerdo, defectos de fábrica, demoras de terceros.', fontSize: 10, margin: [0, 0, 0, 15] },
+      { canvas: [ { type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1, lineColor: '#cccccc' } ], margin: [0, 0, 0, 15] },
+      { text: 'ACEPTACIÓN', fontSize: 11, bold: true, alignment: 'center', margin: [0, 10, 0, 5] },
+      { text: `Aceptado por: ${PROYECTO.cliente}`, fontSize: 10, alignment: 'center', margin: [0, 0, 0, 3] },
+      { text: `Fecha: ${fecha}`, fontSize: 10, alignment: 'center', margin: [0, 0, 0, 20] },
+      { canvas: [ { type: 'line', x1: 100, y1: 0, x2: 415, y2: 0, lineWidth: 1, lineColor: '#333333' } ], margin: [0, 0, 0, 15] },
+      { text: 'Lafinur Studio - Diseño y Arquitectura', fontSize: 9, alignment: 'center', margin: [0, 0, 0, 3] },
+      { text: 'Documento generado digitalmente', fontSize: 9, alignment: 'center', color: '#999999' }
+    ]
+  };
+  pdfMake.createPdf(docDefinition).download(`Contrato_${PROYECTO.nombre.replace(/\s+/g,'_')}_${fecha}.pdf`);
+}
+
+// PRESUPUESTOS (por obra)
+function obtenerPresupuestos() {
+  const stored = localStorage.getItem(kPresupuestos());
+  if(!stored) return [];
+  try { return JSON.parse(stored); } catch { return []; }
+}
+function guardarPresupuestos(presupuestos) {
+  const presupuestoLimpios = presupuestos.map(p => ({ nombre: p.nombre }));
+  localStorage.setItem(kPresupuestos(), JSON.stringify(presupuestoLimpios));
+}
+function adjuntarPresupuesto(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+  const presupuestos = obtenerPresupuestos();
+  if(presupuestos.length >= 5) { alert('Máximo 5 archivos de presupuesto'); return; }
+  presupuestos.push({ nombre: file.name });
+  guardarPresupuestos(presupuestos);
+  renderizarPresupuestos();
+}
+function eliminarPresupuesto(index) {
+  const presupuestos = obtenerPresupuestos();
+  presupuestos.splice(index, 1);
+  guardarPresupuestos(presupuestos);
+  renderizarPresupuestos();
+}
+function renderizarPresupuestos() {
+  const presupuestos = obtenerPresupuestos();
+  const list = document.getElementById('presupuestos-list');
+  const contador = document.getElementById('presupuestos-contador');
+  if(!list || !contador) return;
+  list.innerHTML = presupuestos.map((p, idx) => `
+    <div class="archivo-item">
+      <span class="archivo-nombre"><span class="file-ico">▤</span>${p.nombre}</span>
+      <button class="btn-eliminar" onclick="eliminarPresupuesto(${idx})">Eliminar</button>
+    </div>
+  `).join('');
+  contador.textContent = `${presupuestos.length}/5 archivos`;
+}
+
+// INICIALIZAR
+document.addEventListener('DOMContentLoaded', function() {
+  pintarObra();
+  const fecha = new Date().toLocaleDateString('es-AR');
+  const fEl = document.getElementById('fechaAceptacion');
+  if(fEl) fEl.textContent = fecha;
+  renderizarFases();
+  renderizarPresupuestos();
+});
+</script>
+
+</body>
+</html>
