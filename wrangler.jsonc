@@ -1,14 +1,8 @@
-{
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "lafinurstudio-web",
-  "compatibility_date": "2026-07-28",
-  "observability": {
-    "enabled": true
-  },
-  "assets": {
-    "directory": "."
-  },
-  "compatibility_flags": [
-    "nodejs_compat"
-  ]
-}
+export default {
+  async fetch(request) {
+    const url = new URL(request.url);
+    url.hostname = 'lafinurstudio-web.mentearquitectura.workers.dev';
+    
+    return fetch(new Request(url, request));
+  }
+};
