@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrato - Lafinur Studio - Lorena Domb</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dream+Avenue&family=Glacial+Indifference&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cal: #F2EFE9;
+            --granito: #2E3134;
+            --granito-2: #5A5F64;
+            --roble: #B08147;
+            --cobre: #9C5B3C;
+            --verde: #4A6B5F;
+            --verde-bg: #E4EBE6;
+            --linea: #D6D0C4;
+            --papel: #FBFAF7;
+            --amber-bg: #F3E9DA;
+            --verde-header: #a3c6a8;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Glacial Indifference', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--papel);
+            color: var(--granito);
+            line-height: 1.7;
+            padding: 0;
+        }
+
+        .page-wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(46, 49, 52, 0.08);
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .header {
+            background: var(--verde-header);
+            padding: 50px;
+            color: white;
+            border-bottom: 1px solid var(--linea);
+        }
+
+        .header-brand {
+            font-family: 'Dream Avenue', serif;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #004f96;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-family: 'Dream Avenue', serif;
+            font-size: 34px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+            color: #ffffff;
+        }
+
+        .header-meta {
+            font-size: 14px;
+            line-height: 1.6;
+            opacity: 0.95;
+            font-weight: 400;
+            font-family: 'Glacial Indifference', sans-serif;
+        }
+
+        .header-meta strong {
+            font-weight: 400;
+            opacity: 1;
+        }
+
+        .content {
+            padding: 50px;
+            max-height: 700px;
+            overflow-y: auto;
+            background: white;
+        }
+
+        .content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .content::-webkit-scrollbar-thumb {
+            background: var(--linea);
+            border-radius: 3px;
+        }
+
+        .content::-webkit-scrollbar-thumb:hover {
+            background: var(--granito-2);
+        }
+
+        .info-box {
+            background: var(--verde-bg);
+            border-left: 4px solid var(--verde);
+            padding: 16px 20px;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-bottom: 30px;
+            color: var(--granito);
+            line-height: 1.6;
+        }
+
+        .intro-text {
+            font-size: 13px;
+            margin-bottom: 25px;
+            color: var(--granito-2);
+            line-height: 1.7;
+        }
+
+        .intro-text strong {
+            font-weight: 600;
+            color: var(--granito);
+        }
+
+        .section {
+            margin-bottom: 35px;
+        }
+
+        .section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section h2 {
+            font-family: 'Dream Avenue', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #af7347;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--linea);
+        }
+
+        .section h3 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #af7347;
+            margin-top: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .section p {
+            font-size: 13px;
+            margin-bottom: 10px;
+            color: var(--granito-2);
+            line-height: 1.7;
+        }
+
+        .section ul {
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        .section ul li {
+            font-size: 13px;
+            margin-bottom: 8px;
+            color: var(--granito-2);
+            line-height: 1.6;
+        }
+
+        .section ul li strong {
+            font-weight: 600;
+            color: var(--granito);
+        }
+
+        .footer-content {
+            padding: 50px;
+            background: white;
+            border-top: 1px solid var(--linea);
+        }
+
+        .success-message {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 14px 16px;
+            border-radius: 4px;
+            margin-bottom: 24px;
+            display: none;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .checkbox-section {
+            background: var(--amber-bg);
+            padding: 16px 20px;
+            border-radius: 4px;
+            margin: 24px 0;
+            border-left: 4px solid var(--cobre);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-top: 1px;
+            cursor: pointer;
+            accent-color: var(--cobre);
+            flex-shrink: 0;
+        }
+
+        .checkbox-group label {
+            font-size: 13px;
+            cursor: pointer;
+            user-select: none;
+            color: var(--granito);
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .signatures-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0;
+            margin: 30px 0;
+        }
+
+        .signature-box {
+            border: 1px solid var(--linea);
+            border-radius: 16px;
+            padding: 0;
+            background: var(--cal);
+            display: grid;
+            grid-template-columns: 1fr 3px 1fr;
+        }
+
+        .signature-content {
+            flex: 1;
+            padding: 24px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .signature-content .action-buttons {
+            grid-template-columns: 1fr;
+            gap: 0;
+            width: auto;
+            margin-top: 6px;
+        }
+
+        .signature-divider {
+            display: block;
+            width: 3px;
+            height: auto;
+            background: white;
+            min-height: 80px;
+        }
+
+        .signature-box .label {
+            font-size: 12px;
+            color: var(--granito);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .signature-content .action-buttons button {
+            padding: 6px 12px;
+            font-size: 11px;
+            border-radius: 20px;
+            min-width: auto;
+        }
+
+        .signature-line {
+            height: 20px;
+            margin: 8px 0;
+            border-bottom: 1px solid var(--granito);
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: 'Glacial Indifference', sans-serif;
+            letter-spacing: 0.02em;
+        }
+
+        .btn-accept {
+            background: var(--verde);
+            color: white;
+            border: 1px solid var(--verde);
+        }
+
+        .btn-accept:hover:not(:disabled) {
+            background: #3d5849;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(74, 107, 95, 0.2);
+        }
+
+        .btn-accept:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--cobre);
+            border: 1px solid var(--cobre);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--amber-bg);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .divider-line {
+            height: 1px;
+            background: var(--linea);
+            margin: 25px 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                border-radius: 6px;
+            }
+
+            .header {
+                padding: 30px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .content {
+                padding: 30px;
+                max-height: 600px;
+            }
+
+            .footer-content {
+                padding: 30px;
+            }
+
+            .signature-box {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1px auto;
+            }
+
+            .signature-divider {
+                width: 100%;
+                height: 3px;
+                min-height: auto;
+                background: white;
+            }
+
+            .signature-content {
+                padding: 20px;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div class="container">
+            <div class="header">
+                <h1>Contrato de Prestación de Servicios</h1>
+                <div class="header-meta">
+                    <strong>Proyecto:</strong> Cocina y Lavadero — Palermo<br>
+                    <strong>Cliente:</strong> Lorena Domb
+                </div>
+            </div>
+
+            <div class="content" id="contractContent">
+                <div class="info-box">
+                    Por favor lee el contrato completo antes de aceptar. Una vez que ambas partes acepten, podrás descargar una copia firmada.
+                </div>
+
+                <div class="intro-text">
+                    <strong>Asunto:</strong> Contrato de acuerdo sobre la prestación de servicios entre <strong>Lafinur Studio</strong> y <strong>Lorena Domb</strong>.<br><br>
+                    Este contrato servirá para describir los términos bajo los cuales trabajaremos juntos, en los cuales se denominará a <strong>Lafinur Studio</strong> como "El Estudio" y a <strong>Lorena Domb</strong> como "El Cliente".
+                </div>
+
+                <div class="divider-line"></div>
+
+                <div class="section">
+                    <h2>1. Identificación del trabajo a realizar</h2>
+                    <p><strong>Ubicación del proyecto:</strong> Palermo</p>
+                    <p><strong>Descripción detallada:</strong> Remodelación integral de cocina con conservación de mesada de granito existente y remodelación total del lavadero. El proyecto incluye diseño de mobiliario personalizado para ambos espacios, selección de materiales, especificación de instalaciones y propuesta de equipamiento. Lafinur Studio realizará la supervisión general de todas las fases de ejecución, coordinando con proveedores, fabricantes y contratistas para asegurar que el proyecto se desarrolle conforme a los planos, especificaciones técnicas y cronograma acordado.</p>
+                </div>
+
+                <div class="section">
+                    <h2>2. Fases del proyecto</h2>
+                    <ul>
+                        <li><strong>Fase 1:</strong> Definiciones, Diseño y Presupuesto</li>
+                        <li><strong>Fase 2:</strong> Fabricación</li>
+                        <li><strong>Fase 3:</strong> Modificaciones e Instalaciones (Primera Semana de Obra)</li>
+                        <li><strong>Fase 4:</strong> Terminar Superficies (Segunda Semana de Obra)</li>
+                        <li><strong>Fase 5:</strong> Montar y Entregar (Tercera Semana de Obra)</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2>3. Alcance del trabajo</h2>
+                    <h3>Cocina</h3>
+                    <ul>
+                        <li>Muebles — Reemplazo completo de módulos existentes</li>
+                        <li>Muebles adicionales — Diseño de nuevos muebles en paredes adyacentes</li>
+                        <li>Mesada de granito — Desmontaje, acopio y remontaje (sujeto a verificación estructural)</li>
+                        <li>Pintura completa del ambiente</li>
+                        <li>Propuestas de iluminación (a confirmar)</li>
+                        <li>Extractor/campana (a confirmar) • Grifería (a confirmar) • Pulido de piso (a confirmar)</li>
+                    </ul>
+                    <h3>Lavadero</h3>
+                    <ul>
+                        <li>Remoción de muebles existentes</li>
+                        <li>Diseño de muebles con módulo elevado para secarropas sobre lavarropas (con soporte estructural verificado)</li>
+                        <li>Revestimientos + impermeabilización • Instalación eléctrica • Plomería</li>
+                        <li>Iluminación • Ventilación • Pintura completa • Limpieza de obra</li>
+                    </ul>
+                    <h3>Entregables finales</h3>
+                    <ul>
+                        <li>Reuniones iniciales para diagnóstico e inspiración</li>
+                        <li>Toma de medidas y recopilación de referencias</li>
+                        <li>Creación de moodboard con estilo, paleta y materiales</li>
+                        <li>Diseño de distribución y selección de materiales/equipamiento</li>
+                        <li>Modelado 3D y renders realistas</li>
+                        <li>Presentación final con planos, lista de compras y presupuesto detallado</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2>4. Condicionantes técnicos</h2>
+                    <h3>Mesada de granito</h3>
+                    <p>No puede garantizarse la conservación de la mesada de granito hasta el momento del desmontaje. Existe la posibilidad de fisuras si está adherida con mortero o tiene uniones pegadas. En caso de daño, se informará con diagnóstico, cotización y plazo para su reparación, siendo el cliente quien decide si procede o no.</p>
+                    <h3>Módulo de secarropas</h3>
+                    <p>Se verificará la capacidad portante de la pared. Los herrajes serán dimensionados para el peso cargado. Se garantizará altura operativa sin necesidad de escalera y espacio para venteo según el tipo de equipo. Será necesario confirmar marca, modelo, peso y medidas del lavarropas y secarropas antes de encargar el módulo.</p>
+                    <h3>Patologías y vicios ocultos</h3>
+                    <p>No se incluyen en la base del presupuesto. Si durante la obra se detectan filtraciones, cañerías en mal estado, problemas eléctricos, humedad u otros problemas ocultos, se informará al cliente con diagnóstico, cotización y plazo. La incorporación de la reparación requiere aprobación escrita del cliente.</p>
+                </div>
+
+                <div class="section">
+                    <h2>5. Honorarios y presupuestos</h2>
+                    <p>El proyecto se divide en tres partes claramente definidas:</p>
+                    <p><strong>1. Diseño de entregables y presupuestos (Fase 1)</strong> — Anteproyecto, renders, planos técnicos detallados de cocina y lavadero, lista de materiales, especificaciones de instalaciones, presupuesto detallado de obra y propuestas de soluciones constructivas.</p>
+                    <p><strong>2. Fabricación</strong> — Diseño final aprobado, especificaciones técnicas para fabricación de muebles y definición de proveedores.</p>
+                    <p><strong>3. Obras preliminares, instalaciones y detalles finales</strong> — Ejecución de obra, demolición/remoción de elementos, instalaciones de agua, gas, electricidad, revestimientos, impermeabilización, pintura, montaje de muebles, ajustes finales y entrega.</p>
+                    <h3>Honorarios por diseño, planificación, presupuestos y supervisión</h3>
+                    <p>Al culminar los entregables (planos, renders, especificaciones y presupuesto detallado). Corresponde al 15% del presupuesto de toda la obra.</p>
+                    <h3>Fabricación de muebles</h3>
+                    <p>Se abona un anticipo del 50-60% y el saldo restante antes de terminar la obra, dependiendo del proveedor elegido.</p>
+                    <h3>Instalaciones</h3>
+                    <p>Corresponde al presupuesto por mano de obra según los m² de cocina y lavadero a intervenir, más los materiales constructivos. Se coordina directamente con el constructor/proveedor elegido.</p>
+                </div>
+
+                <div class="section">
+                    <h2>6. Métodos de pago</h2>
+                    <p><strong>El pago de cada etapa se puede realizar en:</strong></p>
+                    <ul>
+                        <li>Efectivo</li>
+                        <li>Transferencia bancaria</li>
+                        <li>Pesos argentinos o dólares (al tipo de cambio cotización "venta" del día según Dólar Banco Nación)</li>
+                    </ul>
+                    <h3>Coordinación de pagos</h3>
+                    <p>El estudio coordinará los pagos a los fabricantes, proveedores y contratistas según acuerdo entre las partes.</p>
+                </div>
+
+                <div class="section">
+                    <h2>7. Garantía y responsabilidad</h2>
+                    <p>El estudio se compromete a entregar un trabajo de calidad profesional. Sin embargo, el estudio no se hace responsable por:</p>
+                    <ul>
+                        <li>Cambios de mercado o disponibilidad de productos después de 30 días de la entrega</li>
+                        <li>Variaciones de color en renders respecto a la realidad una vez aplicados los materiales</li>
+                        <li>Imprevistos estructurales o defectos ocultos en la propiedad descubiertos durante la obra</li>
+                        <li>Decisiones del cliente que afecten el proyecto fuera del acuerdo inicial</li>
+                        <li>Defectos de fábrica en artefactos como herrajes, griferías, entre otros. La garantía de estos elementos es responsabilidad del fabricante/proveedor</li>
+                        <li>Tiempo y demora de los proveedores fabricantes o contratistas</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2>8. Cancelación anticipada del contrato</h2>
+                    <h3>Por parte del cliente</h3>
+                    <ul>
+                        <li><strong>Fase 1:</strong> Se abonará solo lo entregado al cliente (entregables parciales o completos según el avance).</li>
+                        <li><strong>Fase 2:</strong> Se deberá abonar la totalidad del presupuesto al proveedor fabricante de muebles, ya que los pedidos han sido encargados y se encuentran en proceso de fabricación o ya han sido completados.</li>
+                        <li><strong>Fase 3, 4 o 5:</strong> Solo se abonarán los días de trabajo efectivamente realizados según el avance de la obra.</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2>9. Comunicación y reportes</h2>
+                    <p>Se mantiene comunicación fluida con el cliente durante todas las fases del proyecto. Se notifica con anticipación cualquier cambio, imprevisto o decisión que requiera aprobación. Los avances de obra serán actualizados continuamente en la plataforma de Lafinur Studio, donde el cliente tendrá acceso a reportes de avance, fotografías del proyecto, cronograma actualizado y podrá realizar seguimiento en tiempo real de todas las etapas.</p>
+                    <p>Se proporcionan reportes periódicos según sea necesario, y se atienden consultas y coordinaciones de manera ágil. La plataforma de Lafinur Studio es el canal principal de comunicación para mantener transparencia y facilitar la toma de decisiones conjuntas.</p>
+                </div>
+
+                <div class="section">
+                    <h2>10. Duración y experiencia de la obra</h2>
+                    <h3>Cronograma de ejecución</h3>
+                    <ul>
+                        <li><strong>Mes 1:</strong> Diseño y presupuesto (sin obra en casa)</li>
+                        <li><strong>Mes 1-2:</strong> Fabricación de muebles (sin obra en casa)</li>
+                        <li><strong>Semana 1 de obra:</strong> Modificaciones, desmontaje e instalaciones</li>
+                        <li><strong>Semana 2 de obra:</strong> Revestimientos, impermeabilización, pintura y piso</li>
+                        <li><strong>Semana 3 de obra:</strong> Montaje de muebles y entrega final</li>
+                    </ul>
+                    <p><strong>Sin cocina operativa:</strong> Aproximadamente 3 semanas durante la ejecución. Se armará una cocina provisoria en otro ambiente para garantizar confort durante el proceso.</p>
+                    <p><strong>Sin lavarropas ni secarropas disponibles:</strong> Aproximadamente 2 semanas y media durante la fase de instalación y montaje del módulo elevado. Se coordina con el cliente una solución provisoria si es necesario.</p>
+                    <p><strong>Minimización de disrupciones:</strong> El proyecto se divide en fases específicas para minimizar disrupciones en el hogar. No hay presencia de contratistas entre fases, permitiendo que el cliente disfrute de períodos sin obra.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-content">
+            <div class="divider-line"></div>
+
+            <div class="success-message" id="successMessage">
+                ✓ Contrato completamente firmado por ambas partes. Puedes descargar una copia.
+            </div>
+
+            <div class="checkbox-section">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="checkRead" />
+                    <label for="checkRead"><strong>Declaro que he leído este contrato en su totalidad y estoy de acuerdo con todas las cláusulas.</strong></label>
+                </div>
+            </div>
+
+            <div class="signatures-grid">
+                <div class="signature-box">
+                    <div class="signature-content">
+                        <h3 style="font-family: 'Dream Avenue', serif; font-size: 16px; font-weight: 700; margin-bottom: 6px; color: #af7347;">Lafinur Studio</h3>
+                        <div class="label">Diseño y Arquitectura</div>
+                        <div class="signature-line"></div>
+                        <div class="action-buttons" style="margin-top: 6px;">
+                            <button class="btn-accept" id="btnEstudio" onclick="aceptarEstudio()">Acepto</button>
+                        </div>
+                    </div>
+                    <div class="signature-divider"></div>
+                    <div class="signature-content">
+                        <h3 style="font-family: 'Dream Avenue', serif; font-size: 16px; font-weight: 700; margin-bottom: 6px; color: #af7347;">Lorena Domb</h3>
+                        <div class="label">Cliente</div>
+                        <div class="signature-line"></div>
+                        <div class="action-buttons" style="margin-top: 6px;">
+                            <button class="btn-accept" id="btnCliente" onclick="aceptarCliente()">Acepto</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-secondary" id="btnDescargar" onclick="descargarContrato()" disabled>
+                    📥 Descargar Contrato Firmado
+                </button>
+                <button class="btn-secondary" id="btnLimpiar" onclick="limpiarDatos()">
+                    🔄 Limpiar y Empezar de Nuevo
+                </button>
+                <button class="btn-secondary" id="btnVolver" onclick="volverAtras()">
+                    ← Volver
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function inicializar() {
+            const accesoClienteDesdeObra = localStorage.getItem('accesoClienteDesdeObra') === 'true';
+            const accesoEstudio = localStorage.getItem('accesoEstudio') === 'true';
+            
+            const signaturesGrid = document.querySelector('.signatures-grid');
+            const signatureBoxes = signaturesGrid.querySelectorAll('.signature-box');
+            
+            if(accesoClienteDesdeObra) {
+                // CLIENTE: Ocultar la sección de Lafinur Studio (primera caja)
+                signatureBoxes[0].style.display = 'none';
+                localStorage.removeItem('accesoClienteDesdeObra');
+            } 
+            else if(accesoEstudio) {
+                // ESTUDIO: Ocultar la sección del Cliente (segunda caja)
+                signatureBoxes[1].style.display = 'none';
+                localStorage.removeItem('accesoEstudio');
+            }
+            
+            cargarEstado();
+        }
+
+        function cargarEstado() {
+            const estudioAcepta = localStorage.getItem('contrato_scalabrini_estudio') === 'true';
+            const clienteAcepta = localStorage.getItem('contrato_scalabrini_cliente') === 'true';
+            
+            if (estudioAcepta) {
+                document.getElementById('btnEstudio').textContent = '✓ Aceptado';
+                document.getElementById('btnEstudio').disabled = true;
+            }
+            
+            if (clienteAcepta) {
+                document.getElementById('btnCliente').textContent = '✓ Aceptado';
+                document.getElementById('btnCliente').disabled = true;
+            }
+            
+            if (estudioAcepta && clienteAcepta) {
+                document.getElementById('successMessage').classList.add('show');
+                document.getElementById('btnDescargar').disabled = false;
+            }
+        }
+
+        function aceptarEstudio() {
+            const checkRead = document.getElementById('checkRead');
+            if(!checkRead.checked) {
+                alert('⚠️ Debes marcar la casilla de que has leído el contrato antes de continuar');
+                return;
+            }
+            localStorage.setItem('contrato_scalabrini_estudio', 'true');
+            document.getElementById('btnEstudio').textContent = '✓ Aceptado';
+            document.getElementById('btnEstudio').disabled = true;
+            mostrarMensajeExito();
+            
+            // Redirigir al panel de avances
+            setTimeout(function() {
+                window.location.href = 'panel-avances.html';
+            }, 1000);
+        }
+
+        function aceptarCliente() {
+            const checkRead = document.getElementById('checkRead');
+            if(!checkRead.checked) {
+                alert('⚠️ Debes marcar la casilla de que has leído el contrato antes de continuar');
+                return;
+            }
+            localStorage.setItem('contrato_scalabrini_cliente', 'true');
+            document.getElementById('btnCliente').textContent = '✓ Aceptado';
+            document.getElementById('btnCliente').disabled = true;
+            mostrarMensajeExito();
+            
+            // Redirigir al panel de avances después de 1 segundo
+            setTimeout(function() {
+                window.location.href = 'panel-avances.html';
+            }, 1000);
+        }
+        
+        function mostrarMensajeExito() {
+            const estudioAcepta = localStorage.getItem('contrato_scalabrini_estudio') === 'true';
+            const clienteAcepta = localStorage.getItem('contrato_scalabrini_cliente') === 'true';
+            if (estudioAcepta && clienteAcepta) {
+                document.getElementById('successMessage').classList.add('show');
+                document.getElementById('btnDescargar').disabled = false;
+            }
+        }
+
+        function descargarContrato() {
+    </script>
+</body>
+</html>
