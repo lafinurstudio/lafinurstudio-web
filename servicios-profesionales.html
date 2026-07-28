@@ -228,15 +228,18 @@ footer{
         <div class="section">
           <h2>Aceptación de Contratos</h2>
           <div class="doc-list">
-            <div class="doc-item">
+            <div class="doc-item" data-contrato="scalabrini">
               <div class="doc-title">Contrato Scalabrini</div>
               <div class="doc-date">Versión: 1.0 · 10 jul 2026</div>
-              <span class="doc-status status-accepted">Aceptado por ambas partes</span>
+              <span class="doc-status status-pending">Pendiente confirmación</span>
               <div style="margin-top:12px;font-size:12px;color:var(--granito-2)">
                 ✓ Cliente aceptó: 22 jul 2026<br>
                 ✓ Estudio aceptó: 22 jul 2026
               </div>
-              <div><a class="doc-action" href="#" onclick="irAlContratoEstudio()">📋 Ver contrato firmado</a></div>
+              <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+                <a class="doc-action" href="#" onclick="irAlContratoEstudio()">📋 Ver contrato firmado</a>
+                <a class="doc-action" href="#" onclick="confirmarAceptacionCliente('Scalabrini');return false" data-btn-confirmar style="background:#9C5B3C;color:white">✓ Confirmar aceptación cliente</a>
+              </div>
             </div>
 
             <div class="doc-item">
@@ -309,6 +312,7 @@ function verificarContraseña(e){
     autenticado=true;
     document.getElementById('password-gate').style.display='none';
     document.getElementById('app').style.display='block';
+    actualizarEstadoContratos();
   }else{
     document.getElementById('pass-error').style.display='block';
     document.getElementById('pass-input').value='';
@@ -329,6 +333,31 @@ function irAlContratoEstudio(){
   localStorage.setItem('accesoEstudio','true');
   localStorage.setItem('obraActual','scalabrini');
   window.location.href='Contrato_Scalabrini.html';
+}
+
+function confirmarAceptacionCliente(obra) {
+  if(confirm('¿Confirmar que el cliente ha aceptado el contrato de ' + obra + '?')) {
+    localStorage.setItem('cliente_confirmo_' + obra, 'true');
+    actualizarEstadoContratos();
+    alert('✓ Aceptación del cliente confirmada');
+  }
+}
+
+function actualizarEstadoContratos() {
+  const clienteConfirmoScalabrini = localStorage.getItem('cliente_confirmo_scalabrini') === 'true';
+  const clienteAceptoScalabrini = localStorage.getItem('contrato_scalabrini_cliente') === 'true';
+  const estudioAceptoScalabrini = localStorage.getItem('contrato_scalabrini_estudio') === 'true';
+  
+  const scalabriniElement = document.querySelector('[data-contrato="scalabrini"]');
+  if(scalabriniElement) {
+    if(clienteConfirmoScalabrini && estudioAceptoScalabrini) {
+      // Ambas partes confirmadas
+      scalabriniElement.querySelector('.doc-status').textContent = 'Aceptado por ambas partes';
+      scalabriniElement.querySelector('.doc-status').className = 'doc-status status-accepted';
+      const btnConfirmar = scalabriniElement.querySelector('[data-btn-confirmar]');
+      if(btnConfirmar) btnConfirmar.style.display = 'none';
+    }
+  }
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
