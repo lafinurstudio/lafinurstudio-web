@@ -566,7 +566,7 @@ function initMap(){
       
       const botones=()=>{
         if(key==='scalabrini' && data.state==='Solicitado'){
-          return '<button class="popup-select-btn" onclick="irAContratoScalabrini()">Entrar</button>';
+          return '<button class="popup-select-btn" onclick="pedirPasswordScalabrini()">Entrar</button>';
         }else if(isSelectable){
           return '<button class="popup-select-btn" onclick="selectObraFromMap(\''+key+'\')">Seleccionar</button>';
         }else{
@@ -600,11 +600,15 @@ function selectObraFromMap(obra){
   document.getElementById('pass-input').focus();
 }
 
-function irAContratoScalabrini(){
-  // Cliente accede directamente al contrato desde mapa
-  localStorage.setItem('accesoClienteDesdeObra','true');
-  localStorage.setItem('obraActual','scalabrini');
-  window.location.href='Contrato_Scalabrini.html';
+function pedirPasswordScalabrini(){
+  const password = prompt('Ingresa la contraseña para Scalabrini Ortiz:');
+  if(password === '3570'){
+    localStorage.setItem('accesoClienteDesdeObra','true');
+    localStorage.setItem('obraActual','scalabrini');
+    window.location.href='Contrato_Scalabrini.html';
+  } else if(password !== null){
+    alert('Contraseña incorrecta');
+  }
 }
 
 function checkContrato(){
