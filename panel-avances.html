@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel de Avances · Lafinur Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.0/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.0/vfs_fonts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+  if(window.pdfjsLib){ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; }
+</script>
+<style>
+:root {
+  --cal: #F2EFE9;
+  --papel: #FBFAF7;
+  --granito: #2E3134;
+  --granito-2: #6A6F74;
+  --roble: #B08147;
+  --cobre: #9C5B3C;
+  --verde: #4A6B5F;
+  --verde-2: #3d5849;
+  --verde-bg: #E7EDE9;
+  --linea: #E4DFD5;
+  --linea-2: #D6D0C4;
+  --amber-bg: #F5EEE2;
+  --sombra-sm: 0 2px 8px rgba(46,49,52,.05);
+  --sombra: 0 10px 30px -12px rgba(46,49,52,.14);
+  --sombra-lg: 0 22px 50px -20px rgba(46,49,52,.22);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background:
+    radial-gradient(1200px 600px at 100% -10%, rgba(176,129,71,.06), transparent 60%),
+    radial-gradient(900px 500px at -10% 10%, rgba(74,107,95,.06), transparent 55%),
+    var(--cal);
+  color: var(--granito);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* TOP BAR */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px;
+  background: rgba(251,250,247,.82);
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  border-bottom: 1px solid var(--linea);
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 100px;
+  border: 1px solid var(--linea-2);
+  background: white;
+  color: var(--granito);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  box-shadow: var(--sombra-sm);
+}
+.back-btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--cobre);
+  box-shadow: var(--sombra);
+}
+.back-btn .arrow { transition: transform .18s ease; }
+.back-btn:hover .arrow { transform: translateX(-3px); }
+
+.brand {
+  font-family: 'Fraunces', serif;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: .01em;
+  color: var(--granito);
+}
+.brand span { color: var(--cobre); }
+
+/* HERO / HEADER */
+header {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 56px 22px 20px;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--cobre);
+  margin-bottom: 18px;
+}
+.eyebrow::before,
+.eyebrow::after {
+  content: "";
+  width: 22px;
+  height: 1px;
+  background: var(--linea-2);
+}
+
+header h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(38px, 7vw, 64px);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -.01em;
+  margin-bottom: 14px;
+}
+
+header .subtitle {
+  font-size: 15px;
+  color: var(--granito-2);
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 22px;
+  padding: 8px 16px;
+  border-radius: 100px;
+  background: var(--verde-bg);
+  color: var(--verde);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.status-pill .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--verde);
+  box-shadow: 0 0 0 0 rgba(74,107,95,.5);
+  animation: pulse 2.4s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(74,107,95,.45); }
+  70% { box-shadow: 0 0 0 9px rgba(74,107,95,0); }
+  100% { box-shadow: 0 0 0 0 rgba(74,107,95,0); }
+}
+
+/* CONTAINER */
+.container {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 20px 22px 40px;
+}
+
+/* TABS — pill bar */
+.tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 5px;
+  margin: 8px auto 40px;
+  background: white;
+  border: 1px solid var(--linea);
+  border-radius: 100px;
+  box-shadow: var(--sombra-sm);
+  position: sticky;
+  top: 72px;
+  z-index: 40;
+}
+.tabs-wrap { text-align: center; }
+
+.tab {
+  padding: 11px 22px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--granito-2);
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  border-radius: 100px;
+  transition: color .2s ease, background .2s ease;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--granito); }
+.tab.active {
+  color: white;
+  background: var(--verde);
+  box-shadow: 0 6px 16px -6px rgba(74,107,95,.6);
+}
+.tab-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px; padding: 0 5px; margin-left: 4px;
+  border-radius: 100px; background: var(--cobre); color: white;
+  font-size: 11px; font-weight: 700; line-height: 1;
+  vertical-align: middle;
+}
+.tab.active .tab-badge { background: white; color: var(--cobre); }
+@keyframes badgePulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+.tab-badge.pulsa { animation: badgePulse 1.6s ease-in-out infinite; }
+
+.tab-content { display: none; animation: fade .4s ease; }
+.tab-content.active { display: block; }
+@keyframes fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section-title {
+  font-family: 'Fraunces', serif;
+  font-size: 26px;
+  font-weight: 400;
+  margin-bottom: 6px;
+  color: var(--granito);
+}
+.section-desc {
+  font-size: 14px;
+  color: var(--granito-2);
+  margin-bottom: 28px;
+  max-width: 60ch;
+}
+
+/* TIMELINE OF FASES */
+.timeline {
+  position: relative;
+  display: grid;
+  gap: 22px;
+}
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 27px;
+  top: 12px;
+  bottom: 12px;
+  width: 2px;
+  background: linear-gradient(var(--linea-2), var(--linea-2));
+  z-index: 0;
+}
+
+.fase {
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 20px;
+  z-index: 1;
+}
+
+.node {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--linea-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--granito-2);
+  box-shadow: var(--sombra-sm);
+  transition: all .25s ease;
+}
+.fase.done .node {
+  background: var(--verde);
+  border-color: var(--verde);
+  color: white;
+}
+.fase.current .node {
+  border-color: var(--cobre);
+  color: var(--cobre);
+  box-shadow: 0 0 0 5px rgba(156,91,60,.12);
+}
+
+.fase-card {
+  background: var(--papel);
+  border: 1px solid var(--linea);
+  border-radius: 24px;
+  padding: 26px 26px 22px;
+  box-shadow: var(--sombra-sm);
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+.fase-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--sombra);
+}
+
+.fase-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+.fase-title {
+  font-family: 'Fraunces', serif;
+  font-size: 18.5px;
+  font-weight: 500;
+  color: var(--granito);
+  line-height: 1.25;
+}
+.fase-duracion {
+  display: inline-block;
+  margin-top: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .04em;
+  color: var(--roble);
+}
+.fase-desc {
+  font-size: 13.5px;
+  color: var(--granito-2);
+  margin: 12px 0 18px;
+}
+
+.fase-status {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 13px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.fase-status .s-dot { width: 6px; height: 6px; border-radius: 50%; }
+.fase-status.pending { background: #EFECE4; color: var(--granito-2); }
+.fase-status.pending .s-dot { background: var(--granito-2); }
+.fase-status.completed { background: var(--verde-bg); color: var(--verde); }
+.fase-status.completed .s-dot { background: var(--verde); }
+
+/* ARCHIVOS */
+.archivos-section { margin-top: 4px; }
+.archivos-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--granito);
+  margin-bottom: 10px;
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.upload-area {
+  border: 1.5px dashed var(--linea-2);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s ease;
+  background: rgba(255,255,255,.6);
+}
+.upload-area:hover {
+  border-color: var(--verde);
+  background: var(--verde-bg);
+}
+.upload-area input { display: none; }
+.upload-area.drag-activo {
+  border-color: var(--verde);
+  background: var(--verde-bg);
+  transform: scale(1.01);
+}
+.archivo-thumb {
+  width: 44px; height: 44px; border-radius: 8px; object-fit: cover;
+  cursor: pointer; flex-shrink: 0; border: 1px solid var(--linea-2);
+  transition: transform .15s ease;
+}
+.archivo-thumb:hover { transform: scale(1.05); }
+.archivo-thumb-doc { object-fit: cover; object-position: top; background: white; }
+.file-ico-pdf {
+  width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--verde-bg); color: var(--verde); cursor: pointer;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+  border: 1px solid var(--linea-2); transition: transform .15s ease;
+}
+.file-ico-pdf:hover { transform: scale(1.05); }
+.modal-pdf { width: 80vw; height: 82vh; border: none; border-radius: 12px; background: white; }
+.archivo-txt { word-break: break-all; }
+.archivo-nombre { display: inline-flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.archivo-acciones { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.doc-btn {
+  padding: 6px 12px; border-radius: 100px; border: 1px solid var(--linea-2);
+  background: white; color: var(--verde); font-family: 'Inter', sans-serif;
+  font-size: 11px; font-weight: 600; cursor: pointer; transition: all .18s ease;
+}
+.doc-btn:hover { background: var(--verde-bg); border-color: var(--verde); }
+/* Secciones de presupuesto por fase */
+.fase-presupuesto {
+  background: var(--papel); border: 1px solid var(--linea); border-radius: 20px;
+  padding: 22px 24px; margin-bottom: 18px; box-shadow: var(--sombra-sm);
+}
+.fase-presupuesto-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.fase-presupuesto-head .fp-num {
+  width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+  background: var(--verde-bg); color: var(--verde); font-family: 'Fraunces', serif;
+  font-size: 15px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center;
+}
+.fase-presupuesto-head .fp-nombre { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 500; color: var(--granito); }
+/* Modal visor de imagen */
+.img-modal {
+  display: none; position: fixed; inset: 0; z-index: 1000;
+  background: rgba(27,42,58,.82); align-items: center; justify-content: center;
+  padding: 30px; cursor: zoom-out;
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+}
+.img-modal-inner { max-width: 90vw; max-height: 90vh; text-align: center; }
+.img-modal-inner img {
+  max-width: 100%; max-height: 82vh; border-radius: 12px;
+  box-shadow: 0 30px 70px -20px rgba(0,0,0,.6);
+}
+.img-modal-cap {
+  color: white; font-size: 13px; margin-top: 14px; font-family: 'Inter', sans-serif;
+}
+.upload-text {
+  font-size: 13px;
+  color: var(--granito-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+.upload-text .up-ico {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid var(--linea-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--verde);
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.archivos-list {
+  margin-top: 12px;
+  display: grid;
+  gap: 8px;
+}
+.archivo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: white;
+  border: 1px solid var(--linea);
+  border-radius: 12px;
+  border-left: 3px solid var(--verde);
+  font-size: 13px;
+}
+.archivo-nombre {
+  flex: 1;
+  word-break: break-all;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+.archivo-nombre .file-ico { color: var(--cobre); flex-shrink: 0; }
+.btn-eliminar {
+  background: transparent;
+  border: 1px solid var(--linea-2);
+  padding: 6px 12px;
+  border-radius: 100px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--cobre);
+  transition: all .18s ease;
+  flex-shrink: 0;
+}
+.btn-eliminar:hover { background: var(--amber-bg); border-color: var(--cobre); }
+.contador { font-size: 11px; color: var(--granito-2); margin-top: 10px; }
+
+/* CARD genérica (presupuestos / contrato) */
+.card {
+  background: var(--papel);
+  border: 1px solid var(--linea);
+  border-radius: 24px;
+  padding: 30px;
+  box-shadow: var(--sombra-sm);
+}
+
+/* CHAT */
+.chat-card{padding:0;overflow:hidden;display:flex;flex-direction:column}
+.chat-hilo{
+  padding:26px;display:flex;flex-direction:column;gap:14px;
+  min-height:280px;max-height:460px;overflow-y:auto;
+}
+.chat-vacio{
+  text-align:center;color:var(--granito-2);font-size:13.5px;font-style:italic;
+  margin:auto;padding:40px 20px;
+}
+.chat-msg{max-width:78%;display:flex;flex-direction:column;gap:4px}
+.chat-msg .burbuja{
+  padding:12px 16px;border-radius:18px;font-size:13.5px;line-height:1.5;
+  white-space:pre-wrap;word-break:break-word;
+}
+.chat-msg .meta{font-size:10.5px;color:var(--granito-2);padding:0 6px}
+.chat-msg.cliente{align-self:flex-start;align-items:flex-start}
+.chat-msg.cliente .burbuja{background:#EFECE4;color:var(--granito);border-bottom-left-radius:5px}
+.chat-msg.estudio{align-self:flex-end;align-items:flex-end}
+.chat-msg.estudio .burbuja{background:var(--verde);color:white;border-bottom-right-radius:5px}
+.chat-input-row{
+  display:flex;gap:10px;padding:16px 18px;border-top:1px solid var(--linea);
+  background:var(--papel);align-items:flex-end;
+}
+.chat-input{
+  flex:1;resize:none;border:1px solid var(--linea-2);border-radius:14px;
+  padding:12px 14px;font-family:'Inter',sans-serif;font-size:13.5px;line-height:1.5;
+  max-height:120px;transition:border-color .2s ease;
+}
+.chat-input:focus{outline:none;border-color:var(--verde)}
+.chat-send{
+  flex-shrink:0;padding:12px 22px;border:none;border-radius:100px;cursor:pointer;
+  background:var(--verde);color:white;font-family:'Inter';font-size:13.5px;font-weight:600;
+  transition:all .18s ease;
+}
+.chat-send:hover{background:var(--verde-2);transform:translateY(-1px)}
+.note {
+  padding: 16px 18px;
+  background: var(--verde-bg);
+  border-radius: 16px;
+  font-size: 13px;
+  color: var(--verde);
+  margin-bottom: 22px;
+}
+
+/* CONTRATO */
+.contrato-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px 24px;
+  background: white;
+  border: 1px solid var(--linea);
+  padding: 22px 24px;
+  border-radius: 18px;
+  margin-bottom: 22px;
+  font-size: 13.5px;
+}
+.contrato-info p { padding: 7px 0; }
+.contrato-info strong { color: var(--cobre); font-weight: 600; display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 2px; }
+
+.contenido-lista {
+  padding: 20px 22px;
+  background: white;
+  border: 1px solid var(--linea);
+  border-radius: 18px;
+  margin-bottom: 24px;
+}
+.contenido-lista .cl-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--granito);
+  margin-bottom: 14px;
+}
+.contenido-lista ul { list-style: none; display: grid; gap: 9px; }
+.contenido-lista li {
+  font-size: 13.5px;
+  color: var(--granito-2);
+  display: flex;
+  gap: 11px;
+  align-items: center;
+}
+.contenido-lista li .num {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--amber-bg);
+  color: var(--cobre);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* BOTONES */
+.btn {
+  padding: 13px 26px;
+  border: none;
+  border-radius: 100px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+  font-family: 'Inter', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+.btn-primary {
+  background: var(--verde);
+  color: white;
+  box-shadow: 0 10px 24px -10px rgba(74,107,95,.7);
+}
+.btn-primary:hover { background: var(--verde-2); transform: translateY(-2px); }
+
+/* FOOTER */
+footer {
+  max-width: 1040px;
+  margin: 40px auto 0;
+  padding: 34px 22px 48px;
+  text-align: center;
+  border-top: 1px solid var(--linea);
+}
+footer .f-mark {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  color: var(--granito);
+  margin-bottom: 6px;
+}
+footer p { font-size: 12px; color: var(--granito-2); }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  header { padding-top: 40px; }
+  .tabs { top: 68px; width: calc(100% - 44px); overflow-x: auto; justify-content: flex-start; }
+  .tab { padding: 10px 16px; font-size: 12.5px; }
+  .fase { grid-template-columns: 44px 1fr; gap: 14px; }
+  .node { width: 44px; height: 44px; font-size: 17px; }
+  .timeline::before { left: 21px; }
+  .fase-card { padding: 20px; border-radius: 20px; }
+  .contrato-info { grid-template-columns: 1fr; }
+  .brand { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, onSnapshot }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBtfugXk5ZsI5SZ8V-QyxWOzz7-5hFU8U8",
+    authDomain: "lafinurstudio.firebaseapp.com",
+    projectId: "lafinurstudio",
+    storageBucket: "lafinurstudio.firebasestorage.app",
+    messagingSenderId: "383108792937",
+    appId: "1:383108792937:web:6a6be95caa1171f968d8f8"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  window.FB = { ready: true, db, collection, doc, getDoc, getDocs, setDoc, deleteDoc, onSnapshot };
+  window.dispatchEvent(new Event('firebase-ready'));
+</script>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <a class="back-btn" href="index.html">
+    <span class="arrow">←</span> Volver al inicio
+  </a>
+  <div class="brand">Lafinur <span>Studio</span></div>
+</div>
+
+<!-- HERO -->
+<header>
+  <div class="eyebrow">Seguimiento de proyecto</div>
+  <h1 id="hero-nombre">—</h1>
+  <div class="subtitle" id="hero-subtitle">—</div>
+  <div class="status-pill" id="hero-status"><span class="dot"></span> <span id="hero-status-text">—</span></div>
+</header>
+
+<!-- TABS -->
+<div class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('cronograma', this)">Cronograma</button>
+    <button class="tab" onclick="switchTab('presupuestos', this)">Presupuestos</button>
+    <button class="tab" onclick="switchTab('contrato', this)">Contrato</button>
+    <button class="tab" id="tab-mensajes" onclick="switchTab('mensajes', this)">Mensajes <span class="tab-badge" id="msgBadge" style="display:none"></span></button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+
+  <!-- PESTAÑA 1: CRONOGRAMA -->
+  <div id="cronograma" class="tab-content active">
+    <div class="section-title">Cronograma y fases de obra</div>
+    <p class="section-desc">El recorrido completo del proyecto, fase por fase. Cada etapa reúne sus archivos, planos y registros de avance.</p>
+    <div class="timeline" id="fasesContainer"></div>
+  </div>
+
+  <!-- PESTAÑA 2: PRESUPUESTOS -->
+  <div id="presupuestos" class="tab-content">
+    <div class="section-title">Presupuestos</div>
+    <p class="section-desc" id="presupuestos-desc">Documentos de presupuesto organizados por fase de obra.</p>
+    <div id="presupuestosPorFase"></div>
+  </div>
+
+  <!-- PESTAÑA 3: CONTRATO -->
+  <div id="contrato" class="tab-content">
+    <div class="section-title">Documento del contrato</div>
+    <p class="section-desc">Contrato aceptado por el cliente. Podés descargar una copia completa en PDF.</p>
+    <div class="card">
+      <div class="contrato-info">
+        <p><strong>Cliente</strong> <span id="ci-cliente">—</span></p>
+        <p><strong>Obra</strong> <span id="ci-obra">—</span></p>
+        <p><strong>Ubicación</strong> <span id="ci-ubicacion">—</span></p>
+        <p><strong>Estado</strong> Aceptado por el cliente</p>
+        <p><strong>Fecha de aceptación</strong> <span id="fechaAceptacion">-</span></p>
+      </div>
+
+      <div class="contenido-lista">
+        <div class="cl-title">Contenido del contrato</div>
+        <ul>
+          <li><span class="num">1</span> Identificación del trabajo</li>
+          <li><span class="num">2</span> Fases del proyecto</li>
+          <li><span class="num">3</span> Alcance de la obra</li>
+          <li><span class="num">4</span> Honorarios y presupuestos</li>
+          <li><span class="num">5</span> Métodos de pago</li>
+          <li><span class="num">6</span> Duración de la obra</li>
+          <li><span class="num">7</span> Garantía y responsabilidad</li>
+        </ul>
+      </div>
+
+      <button class="btn btn-primary" onclick="descargarContratoCompleto()"><span>↓</span> Descargar contrato completo</button>
+    </div>
+  </div>
+
+  <!-- PESTAÑA 4: MENSAJES (CHAT) -->
+  <div id="mensajes" class="tab-content">
+    <div class="section-title">Mensajes</div>
+    <p class="section-desc" id="mensajes-desc">Espacio de comunicación sobre el proyecto.</p>
+    <div class="card chat-card">
+      <div class="chat-hilo" id="chatHilo"></div>
+      <div class="chat-input-row">
+        <textarea id="chatInput" class="chat-input" rows="1" placeholder="Escribí un mensaje..."></textarea>
+        <button class="chat-send" onclick="enviarMensaje()">Enviar</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-mark">Lafinur Studio</div>
+  <p>Panel de seguimiento exclusivo para cliente · © 2026 Diseño y Arquitectura</p>
+</footer>
+
+<script>
+/* ============================================================
+   CONFIGURACIÓN POR OBRA
+   Cada proyecto define: nombre, subtítulo, ubicación, cliente,
+   estado, clave (para PDF y storage) y sus fases propias.
+   Para agregar/editar una obra, modificá este objeto.
+   ============================================================ */
+const PROYECTOS = {
+  scalabrini: {
+    nombre: 'Scalabrini Ortiz',
+    subtitle: 'Remodelación de cocina y lavadero · Palermo',
+    ubicacion: 'Scalabrini Ortiz, Palermo',
+    cliente: 'Lorena Domb',
+    obraLabel: 'Remodelación cocina y lavadero',
+    estado: 'Obra en curso',
+    fases: [
+      { numero: 1, nombre: 'Definiciones, diseño y presupuesto', descripcion: 'Planos técnicos, renders, especificaciones y presupuesto detallado aprobados por el cliente.', duracion: 'Sin obra en casa' },
+      { numero: 2, nombre: 'Fabricación', descripcion: 'Fabricación de muebles a medida y adquisición de materiales según especificaciones.', duracion: 'Sin obra en casa' },
+      { numero: 3, nombre: 'Modificaciones e instalaciones', descripcion: 'Demolición, desmontaje e instalaciones técnicas (cañerías, electricidad, gas).', duracion: 'Primera semana de obra' },
+      { numero: 4, nombre: 'Terminar superficies', descripcion: 'Revestimientos, impermeabilización, pintura y piso.', duracion: 'Segunda semana de obra' },
+      { numero: 5, nombre: 'Montar y entregar', descripcion: 'Montaje de muebles, instalación de complementos y entrega final.', duracion: 'Tercera semana de obra' }
+    ]
+  },
+  voltaire: {
+    nombre: 'Voltaire',
+    subtitle: 'Proyecto de interiorismo · Palermo',
+    ubicacion: 'Voltaire, Palermo',
+    cliente: 'A completar',
+    obraLabel: 'A completar',
+    estado: 'Obra en curso',
+    fases: [
+      { numero: 1, nombre: 'Impermeabilización', descripcion: 'Impermeabilización de terraza interna y externa.', duracion: 'Completado', completa: true },
+      { numero: 2, nombre: 'Arreglos internos', descripcion: 'Arreglos y trabajos internos del espacio.', duracion: 'En curso' },
+      { numero: 3, nombre: 'Mobiliario', descripcion: 'Diseño, fabricación y colocación del mobiliario.', duracion: 'A definir' },
+      { numero: 4, nombre: 'Pintura', descripcion: 'Pintura y terminaciones finales.', duracion: 'A definir' }
+    ]
+  },
+  malvinas: {
+    nombre: 'Malvinas Argentinas',
+    subtitle: 'Proyecto de obra · San Justo',
+    ubicacion: 'Malvinas Argentinas, San Justo',
+    cliente: 'A completar',
+    obraLabel: 'A completar',
+    estado: 'Obra en curso',
+    fases: [
+      { numero: 1, nombre: 'Presupuesto estimado', descripcion: 'Presupuesto estimado del proyecto.', duracion: 'Completo', completa: true },
+      { numero: 2, nombre: 'Anteproyecto y proyecto', descripcion: 'Desarrollo del anteproyecto y proyecto ejecutivo.', duracion: 'En curso' },
+      { numero: 3, nombre: 'Gerenciamiento', descripcion: 'Gerenciamiento y coordinación de la obra.', duracion: 'A definir' },
+      { numero: 4, nombre: 'Ejecución', descripcion: 'Ejecución de la obra.', duracion: 'A definir' }
+    ]
+  },
+  pilar: {
+    nombre: 'Pilar',
+    subtitle: 'Proyecto de obra · Pilar, Buenos Aires',
+    ubicacion: 'Pilar, Buenos Aires',
+    cliente: 'A completar',
+    obraLabel: 'A completar',
+    estado: 'Obra en curso',
+    fases: [
+      { numero: 1, nombre: 'Diseño y presupuesto', descripcion: 'A completar según el proyecto Pilar.', duracion: 'A definir' },
+      { numero: 2, nombre: 'Fabricación', descripcion: 'A completar.', duracion: 'A definir' },
+      { numero: 3, nombre: 'Ejecución de obra', descripcion: 'A completar.', duracion: 'A definir' },
+      { numero: 4, nombre: 'Terminaciones', descripcion: 'A completar.', duracion: 'A definir' },
+      { numero: 5, nombre: 'Entrega final', descripcion: 'A completar.', duracion: 'A definir' }
+    ]
+  },
+  ciudadpaz: {
+    nombre: 'Ciudad de la Paz',
+    subtitle: 'Proyecto finalizado · La Boca',
+    ubicacion: 'Ciudad de la Paz, La Boca',
+    cliente: 'A completar',
+    obraLabel: 'A completar',
+    estado: 'Obra terminada',
+    fases: [
+      { numero: 1, nombre: 'Diseño y presupuesto', descripcion: 'A completar según el proyecto Ciudad de la Paz.', duracion: 'Completada' },
+      { numero: 2, nombre: 'Fabricación', descripcion: 'A completar.', duracion: 'Completada' },
+      { numero: 3, nombre: 'Ejecución de obra', descripcion: 'A completar.', duracion: 'Completada' },
+      { numero: 4, nombre: 'Entrega final', descripcion: 'A completar.', duracion: 'Completada' }
+    ]
+  }
+};
+
+/* ============================================================
+   RESOLVER QUÉ OBRA MOSTRAR
+   1) Por parámetro de URL: panel-avances.html?obra=voltaire
+   2) Si no hay, por localStorage 'obraActual' (lo setea el mapa)
+   3) Fallback: scalabrini
+   ============================================================ */
+function getObraKey() {
+  const params = new URLSearchParams(window.location.search);
+  const fromUrl = params.get('obra');
+  if (fromUrl && PROYECTOS[fromUrl]) return fromUrl;
+  const fromStorage = localStorage.getItem('obraActual');
+  if (fromStorage && PROYECTOS[fromStorage]) return fromStorage;
+  return 'scalabrini';
+}
+
+const OBRA_KEY = getObraKey();
+const PROYECTO = PROYECTOS[OBRA_KEY];
+const fases = PROYECTO.fases;
+
+/* ============================================================
+   SINCRONIZACIÓN CON FIRESTORE (nube)
+   localStorage = caché local; Firestore = fuente de verdad compartida.
+   ============================================================ */
+const NUBE = { activa: false };
+
+function colRef(nombre) {
+  const { db, collection } = window.FB;
+  return collection(db, 'proyectos', OBRA_KEY, nombre);
+}
+async function nubeGuardarColeccion(nombreCol, items) {
+  if(!NUBE.activa || !window.FB) return;
+  const { doc, setDoc, getDocs, deleteDoc } = window.FB;
+  try {
+    const existentes = await getDocs(colRef(nombreCol));
+    const idsActuales = items.map((_, i) => String(i));
+    for(const d of existentes.docs) {
+      if(!idsActuales.includes(d.id)) await deleteDoc(d.ref);
+    }
+    for(let i=0;i<items.length;i++) {
+      await setDoc(doc(colRef(nombreCol), String(i)), items[i]);
+    }
+  } catch(e) { console.warn('Nube (guardar):', e); }
+}
+async function nubeLeerColeccion(nombreCol) {
+  if(!NUBE.activa || !window.FB) return null;
+  try {
+    const snap = await window.FB.getDocs(colRef(nombreCol));
+    const arr = [];
+    snap.forEach(d => arr[parseInt(d.id,10)] = d.data());
+    return arr.filter(x => x !== undefined);
+  } catch(e) { console.warn('Nube (leer):', e); return null; }
+}
+function nubeEscuchar(nombreCol, onCambio) {
+  if(!NUBE.activa || !window.FB) return;
+  try {
+    window.FB.onSnapshot(colRef(nombreCol), snap => {
+      const arr = [];
+      snap.forEach(d => arr[parseInt(d.id,10)] = d.data());
+      onCambio(arr.filter(x => x !== undefined));
+    });
+  } catch(e) { console.warn('Nube (escuchar):', e); }
+}
+
+/* Claves de almacenamiento separadas por obra */
+function kArchivos(faseNum) { return `archivos_${OBRA_KEY}_fase_${faseNum}`; }
+function kPresupuestos() { return `presupuestos_${OBRA_KEY}`; }
+function kContrato() { return `contrato_${OBRA_KEY}_aceptado_cliente`; }
+
+/* ============================================================
+   CONTROL DE ACCESO
+   El panel se habilita si el cliente aceptó el contrato de ESTA obra.
+   ============================================================ */
+const clienteAcepto = localStorage.getItem(kContrato()) === 'true';
+const accesoEstudio = localStorage.getItem('accesoEstudio') === 'true';
+// ES_ESTUDIO: true si viene de Servicios Profesionales. Controla permisos de archivos.
+const ES_ESTUDIO = accesoEstudio;
+if(!clienteAcepto && !accesoEstudio) {
+  document.body.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#F2EFE9;text-align:center;padding:22px">
+      <div style="max-width:420px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#9C5B3C;margin-bottom:16px">Acceso restringido</div>
+        <h1 style="font-family:'Fraunces',serif;font-size:36px;font-weight:400;margin-bottom:14px;color:#2E3134">Este panel aún no está habilitado</h1>
+        <p style="font-size:15px;color:#6A6F74;margin-bottom:28px">Se habilita automáticamente cuando aceptás el contrato de la obra.</p>
+        <a href="index.html" style="display:inline-flex;align-items:center;gap:8px;padding:13px 26px;background:#4A6B5F;color:white;text-decoration:none;border-radius:100px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;box-shadow:0 10px 24px -10px rgba(74,107,95,.7)">← Volver al inicio</a>
+      </div>
+    </div>
+  `;
+  throw new Error('Acceso denegado');
+}
+
+/* ============================================================
+   PINTAR DATOS DE LA OBRA EN LA PÁGINA
+   ============================================================ */
+function pintarObra() {
+  document.title = `Panel de Avances · ${PROYECTO.nombre}`;
+  document.getElementById('hero-nombre').textContent = PROYECTO.nombre;
+  document.getElementById('hero-subtitle').textContent = PROYECTO.subtitle;
+  document.getElementById('hero-status-text').textContent = PROYECTO.estado;
+  document.getElementById('ci-cliente').textContent = PROYECTO.cliente;
+  document.getElementById('ci-obra').textContent = PROYECTO.obraLabel;
+  document.getElementById('ci-ubicacion').textContent = PROYECTO.ubicacion;
+}
+
+// CAMBIAR PESTAÑA
+function switchTab(tabName, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(tabName).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(tabName === 'cronograma') renderizarFases();
+  if(tabName === 'mensajes') { marcarChatLeido(); actualizarBadge(); }
+}
+
+// RENDERIZAR FASES
+function renderizarFases() {
+  const container = document.getElementById('fasesContainer');
+  container.innerHTML = '';
+
+  fases.forEach(fase => {
+    const archivos = obtenerArchivos(fase.numero);
+    const completa = fase.completa === true || archivos.length > 0;
+
+    const faseDiv = document.createElement('div');
+    faseDiv.className = 'fase' + (completa ? ' done' : '');
+    faseDiv.id = `fase-${fase.numero}`;
+
+    faseDiv.innerHTML = `
+      <div class="node">${completa ? '✓' : fase.numero}</div>
+      <div class="fase-card">
+        <div class="fase-top">
+          <div>
+            <div class="fase-title">Fase ${fase.numero} · ${fase.nombre}</div>
+            <span class="fase-duracion">${fase.duracion}</span>
+          </div>
+          <span class="fase-status ${completa ? 'completed' : 'pending'}">
+            <span class="s-dot"></span>${fase.completa === true ? 'Completado' : (completa ? 'Con avances' : 'En espera')}
+          </span>
+        </div>
+
+        <p class="fase-desc">${fase.descripcion}</p>
+
+        <div class="archivos-section">
+          <label class="archivos-label">Archivos adjuntos${ES_ESTUDIO ? ' (máximo 3)' : ''}</label>
+          ${ES_ESTUDIO ? `
+          <div class="upload-area" id="drop-${fase.numero}" onclick="document.getElementById('file-${fase.numero}').click()">
+            <input type="file" id="file-${fase.numero}" accept="image/*,.pdf,.doc,.docx" onchange="adjuntarArchivo(${fase.numero}, event)">
+            <div class="upload-text"><span class="up-ico">↑</span> Subí un archivo o arrastralo aquí</div>
+          </div>` : ''}
+          <div class="archivos-list" id="archivos-${fase.numero}">
+            ${archivos.length ? archivos.map((arch, idx) => `
+              <div class="archivo-item">
+                <span class="archivo-nombre">
+                  ${arch.tipo === 'imagen' && arch.img
+                    ? `<img src="${arch.img}" class="archivo-thumb" alt="${arch.nombre}" onclick="verImagen('${arch.img}','${arch.nombre.replace(/'/g,"\\'")}')">`
+                    : `<span class="file-ico">▤</span>`}
+                  <span class="archivo-txt">${arch.nombre}</span>
+                </span>
+                ${ES_ESTUDIO ? `<button class="btn-eliminar" onclick="eliminarArchivo(${fase.numero}, ${idx})">Eliminar</button>` : ''}
+              </div>
+            `).join('') : `<p style="font-size:12.5px;color:var(--granito-2);font-style:italic;padding:4px 0">Sin archivos por el momento.</p>`}
+          </div>
+          ${ES_ESTUDIO ? `<p class="contador">${archivos.length}/3 archivos</p>` : ''}
+        </div>
+      </div>
+    `;
+    container.appendChild(faseDiv);
+  });
+  // Activar arrastrar-y-soltar en las zonas de subida (solo estudio)
+  if(ES_ESTUDIO) {
+    fases.forEach(fase => activarDrop(`drop-${fase.numero}`, (file) => adjuntarArchivo(fase.numero, file)));
+  }
+}
+
+// DRAG & DROP: conecta una zona con un callback que recibe el archivo
+function activarDrop(id, onFile) {
+  const zona = document.getElementById(id);
+  if(!zona) return;
+  ['dragenter','dragover'].forEach(ev => zona.addEventListener(ev, (e) => {
+    e.preventDefault(); e.stopPropagation(); zona.classList.add('drag-activo');
+  }));
+  ['dragleave','dragend'].forEach(ev => zona.addEventListener(ev, (e) => {
+    e.preventDefault(); e.stopPropagation(); zona.classList.remove('drag-activo');
+  }));
+  zona.addEventListener('drop', (e) => {
+    e.preventDefault(); e.stopPropagation(); zona.classList.remove('drag-activo');
+    const files = e.dataTransfer && e.dataTransfer.files;
+    if(files && files.length) onFile(files[0]);
+  });
+}
+
+// VISOR DE IMAGEN (modal)
+function verImagen(src, nombre) {
+  abrirVisor(src, nombre, 'imagen');
+}
+// Visor grande embebido (imagen o PDF)
+function abrirVisor(src, nombre, tipo) {
+  let modal = document.getElementById('imgModal');
+  if(!modal) {
+    modal = document.createElement('div');
+    modal.id = 'imgModal';
+    modal.className = 'img-modal';
+    modal.onclick = function(e){ if(e.target===modal) modal.style.display='none'; };
+    modal.innerHTML = '<div class="img-modal-inner"><div id="imgModalBody"></div><div class="img-modal-cap" id="imgModalCap"></div></div>';
+    document.body.appendChild(modal);
+  }
+  const body = document.getElementById('imgModalBody');
+  if(tipo === 'pdf') {
+    body.innerHTML = `<iframe src="${src}" class="modal-pdf"></iframe>`;
+  } else {
+    body.innerHTML = `<img src="${src}" alt="">`;
+  }
+  document.getElementById('imgModalCap').textContent = nombre || '';
+  modal.style.display = 'flex';
+}
+// Procesa un archivo (imagen -> miniatura comprimida; otro -> solo nombre)
+function procesarArchivo(file, cb) {
+  const esImagen = file.type && file.type.startsWith('image/');
+  const LIMITE = 900 * 1024; // 900KB (límite de Firestore por documento ~1MB)
+  if(file.size > LIMITE) {
+    alert('El archivo supera los 900 KB y no se puede guardar en la nube. Probá con uno más liviano (o comprimí el PDF).');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const dataCompleto = e.target.result; // dataURL con el archivo completo
+    const esPdf = (file.type && file.type.indexOf('pdf') !== -1) || /\.pdf$/i.test(file.name);
+    if(esPdf && window.pdfjsLib) {
+      // PDF: generar miniatura de la primera página
+      generarThumbPdf(dataCompleto, function(thumb){
+        cb({ nombre: file.name, tipo: 'pdf', img: thumb, data: dataCompleto });
+      }, function(){
+        cb({ nombre: file.name, tipo: 'pdf', img: null, data: dataCompleto });
+      });
+      return;
+    }
+    if(!esImagen) {
+      // Word u otros: guardar completo para abrir/descargar (sin miniatura)
+      cb({ nombre: file.name, tipo: 'archivo', data: dataCompleto });
+      return;
+    }
+    // Imagen: generar miniatura comprimida + guardar original para descarga
+    const img = new Image();
+    img.onload = function() {
+      const MAX = 800;
+      let w = img.width, h = img.height;
+      if(w > h && w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+      else if(h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const thumb = canvas.toDataURL('image/jpeg', 0.7);
+      cb({ nombre: file.name, tipo: 'imagen', img: thumb, data: dataCompleto });
+    };
+    img.onerror = function(){ cb({ nombre: file.name, tipo: 'archivo', data: dataCompleto }); };
+    img.src = dataCompleto;
+  };
+  reader.onerror = function(){ alert('No se pudo leer el archivo.'); };
+  reader.readAsDataURL(file);
+}
+
+// Genera una miniatura (dataURL) de la primera página de un PDF
+function generarThumbPdf(dataUrl, ok, fail) {
+  try {
+    const base64 = dataUrl.split(',')[1];
+    const bin = atob(base64);
+    const bytes = new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+    pdfjsLib.getDocument({data:bytes}).promise.then(function(pdf){
+      return pdf.getPage(1);
+    }).then(function(page){
+      const viewport = page.getViewport({scale:1});
+      const escala = 500 / viewport.width; // ancho objetivo ~500px
+      const vp = page.getViewport({scale:escala});
+      const canvas = document.createElement('canvas');
+      canvas.width = vp.width; canvas.height = vp.height;
+      return page.render({canvasContext:canvas.getContext('2d'), viewport:vp}).promise.then(function(){
+        ok(canvas.toDataURL('image/jpeg', 0.7));
+      });
+    }).catch(function(){ fail && fail(); });
+  } catch(e) { fail && fail(); }
+}
+
+// Abrir un archivo (dataURL) en pestaña nueva
+function abrirArchivo(dataUrl, nombre) {
+  if(!dataUrl) { alert('Este archivo no tiene contenido guardado.'); return; }
+  const w = window.open();
+  if(w) {
+    w.document.write(`<title>${nombre||'Documento'}</title><iframe src="${dataUrl}" style="border:0;width:100vw;height:100vh"></iframe>`);
+  }
+}
+// Descargar un archivo (dataURL)
+function descargarArchivo(dataUrl, nombre) {
+  if(!dataUrl) { alert('Este archivo no tiene contenido guardado.'); return; }
+  const a = document.createElement('a');
+  a.href = dataUrl; a.download = nombre || 'documento';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+function adjuntarArchivo(faseNum, fileOrEvent) {
+  const file = fileOrEvent && fileOrEvent.target ? fileOrEvent.target.files[0] : fileOrEvent;
+  if(!file) return;
+  const archivos = obtenerArchivos(faseNum);
+  if(archivos.length >= 3) { alert('Máximo 3 archivos por fase'); return; }
+  procesarArchivo(file, function(item) {
+    archivos.push(item);
+    try {
+      guardarArchivos(faseNum, archivos);
+    } catch(err) {
+      alert('No se pudo guardar el archivo. Puede que el almacenamiento esté lleno.');
+      return;
+    }
+    renderizarFases();
+  });
+}
+
+// ELIMINAR ARCHIVO
+function eliminarArchivo(faseNum, index) {
+  const archivos = obtenerArchivos(faseNum);
+  archivos.splice(index, 1);
+  guardarArchivos(faseNum, archivos);
+  renderizarFases();
+}
+
+// OBTENER / GUARDAR ARCHIVOS (por obra + fase)
+function obtenerArchivos(faseNum) {
+  const stored = localStorage.getItem(kArchivos(faseNum));
+  if(!stored) return [];
+  try { return JSON.parse(stored); } catch { return []; }
+}
+function guardarArchivos(faseNum, archivos) {
+  const limpios = archivos.map(arch => ({
+    nombre: arch.nombre,
+    tipo: arch.tipo || 'archivo',
+    img: arch.img || null,
+    data: arch.data || null
+  }));
+  localStorage.setItem(kArchivos(faseNum), JSON.stringify(limpios));
+  nubeGuardarColeccion(`archivos_fase_${faseNum}`, limpios);
+}
+
+// DESCARGAR CONTRATO COMPLETO (usa datos de la obra actual)
+function descargarContratoCompleto() {
+  const fecha = new Date().toLocaleDateString('es-AR');
+  const docDefinition = {
+    pageSize: 'A4',
+    pageMargins: [15, 15, 15, 15],
+    content: [
+      { text: `CONTRATO ${PROYECTO.nombre.toUpperCase()}`, fontSize: 16, bold: true, alignment: 'center', margin: [0, 0, 0, 5] },
+      { text: 'Proyecto de Remodelación - Diseño y Arquitectura', fontSize: 10, color: '#666666', alignment: 'center', margin: [0, 0, 0, 15] },
+      { table: { headerRows: 0, widths: ['*', '*'], body: [
+        [ { text: `Cliente: ${PROYECTO.cliente}`, fontSize: 10 }, { text: `Obra: ${PROYECTO.obraLabel}`, fontSize: 10 } ],
+        [ { text: `Ubicación: ${PROYECTO.ubicacion}`, fontSize: 10 }, { text: `Fecha: ${fecha}`, fontSize: 10 } ]
+      ] }, margin: [0, 0, 0, 15] },
+      { text: '1. FASES DEL PROYECTO', fontSize: 11, bold: true, margin: [0, 10, 0, 5] },
+      { ul: fases.map(f => `Fase ${f.numero}: ${f.nombre}`), margin: [0, 0, 0, 10] },
+      { text: '2. MÉTODOS DE PAGO', fontSize: 11, bold: true, margin: [0, 10, 0, 5] },
+      { text: 'Efectivo, Transferencia bancaria, Pesos o dólares (cotización Banco Nación).', fontSize: 10, margin: [0, 0, 0, 10] },
+      { text: '3. GARANTÍA Y RESPONSABILIDAD', fontSize: 11, bold: true, margin: [0, 10, 0, 5] },
+      { text: 'Trabajo de calidad profesional. No responsable por: cambios de mercado, variaciones de color, imprevistos estructurales, decisiones fuera del acuerdo, defectos de fábrica, demoras de terceros.', fontSize: 10, margin: [0, 0, 0, 15] },
+      { canvas: [ { type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1, lineColor: '#cccccc' } ], margin: [0, 0, 0, 15] },
+      { text: 'ACEPTACIÓN', fontSize: 11, bold: true, alignment: 'center', margin: [0, 10, 0, 5] },
+      { text: `Aceptado por: ${PROYECTO.cliente}`, fontSize: 10, alignment: 'center', margin: [0, 0, 0, 3] },
+      { text: `Fecha: ${fecha}`, fontSize: 10, alignment: 'center', margin: [0, 0, 0, 20] },
+      { canvas: [ { type: 'line', x1: 100, y1: 0, x2: 415, y2: 0, lineWidth: 1, lineColor: '#333333' } ], margin: [0, 0, 0, 15] },
+      { text: 'Lafinur Studio - Diseño y Arquitectura', fontSize: 9, alignment: 'center', margin: [0, 0, 0, 3] },
+      { text: 'Documento generado digitalmente', fontSize: 9, alignment: 'center', color: '#999999' }
+    ]
+  };
+  pdfMake.createPdf(docDefinition).download(`Contrato_${PROYECTO.nombre.replace(/\s+/g,'_')}_${fecha}.pdf`);
+}
+
+// PRESUPUESTOS (por obra)
+function kPresupuestosFase(faseNum) { return `presupuestos_${OBRA_KEY}_fase_${faseNum}`; }
+
+function obtenerPresupuestosFase(faseNum) {
+  const stored = localStorage.getItem(kPresupuestosFase(faseNum));
+  if(!stored) return [];
+  try { return JSON.parse(stored); } catch { return []; }
+}
+function guardarPresupuestosFase(faseNum, arr) {
+  localStorage.setItem(kPresupuestosFase(faseNum), JSON.stringify(arr));
+  nubeGuardarColeccion(`presupuestos_fase_${faseNum}`, arr);
+}
+function adjuntarPresupuesto(faseNum, fileOrEvent) {
+  const file = fileOrEvent && fileOrEvent.target ? fileOrEvent.target.files[0] : fileOrEvent;
+  if(!file) return;
+  const arr = obtenerPresupuestosFase(faseNum);
+  if(arr.length >= 5) { alert('Máximo 5 documentos por fase'); return; }
+  procesarArchivo(file, function(item) {
+    arr.push(item);
+    try { guardarPresupuestosFase(faseNum, arr); }
+    catch(err) { alert('No se pudo guardar el archivo. Puede que el almacenamiento esté lleno.'); return; }
+    renderizarPresupuestos();
+  });
+}
+function eliminarPresupuesto(faseNum, index) {
+  const arr = obtenerPresupuestosFase(faseNum);
+  arr.splice(index, 1);
+  guardarPresupuestosFase(faseNum, arr);
+  renderizarPresupuestos();
+}
+function renderizarPresupuestos() {
+  const cont = document.getElementById('presupuestosPorFase');
+  if(!cont) return;
+  cont.innerHTML = fases.map(fase => {
+    const docs = obtenerPresupuestosFase(fase.numero);
+    const items = docs.length ? docs.map((p, idx) => {
+      const nombreEsc = p.nombre.replace(/'/g,"\\'");
+      let thumbHtml;
+      if(p.tipo === 'imagen' && p.img) {
+        thumbHtml = `<img src="${p.img}" class="archivo-thumb" alt="${escapeHtml(p.nombre)}" onclick="verImagen('${p.data||p.img}','${nombreEsc}')">`;
+      } else if(p.tipo === 'pdf' && p.img) {
+        thumbHtml = `<img src="${p.img}" class="archivo-thumb archivo-thumb-doc" alt="${escapeHtml(p.nombre)}" onclick="abrirVisor('${p.data}','${nombreEsc}','pdf')">`;
+      } else if(p.tipo === 'pdf') {
+        thumbHtml = `<span class="file-ico file-ico-pdf" onclick="abrirVisor('${p.data}','${nombreEsc}','pdf')">PDF</span>`;
+      } else {
+        thumbHtml = `<span class="file-ico">▤</span>`;
+      }
+      return `
+      <div class="archivo-item">
+        <span class="archivo-nombre">
+          ${thumbHtml}
+          <span class="archivo-txt">${escapeHtml(p.nombre)}</span>
+        </span>
+        <span class="archivo-acciones">
+          <button class="doc-btn" title="Abrir" onclick="abrirArchivo('${p.data||''}','${nombreEsc}')">Abrir</button>
+          <button class="doc-btn" title="Descargar" onclick="descargarArchivo('${p.data||''}','${nombreEsc}')">Descargar</button>
+          ${ES_ESTUDIO ? `<button class="btn-eliminar" onclick="eliminarPresupuesto(${fase.numero}, ${idx})">Eliminar</button>` : ''}
+        </span>
+      </div>`;
+    }).join('') : `<p style="font-size:12.5px;color:var(--granito-2);font-style:italic;padding:4px 0">Sin documentos por el momento.</p>`;
+
+    return `
+      <div class="fase-presupuesto">
+        <div class="fase-presupuesto-head">
+          <span class="fp-num">${fase.numero}</span>
+          <span class="fp-nombre">Fase ${fase.numero} · ${fase.nombre}</span>
+        </div>
+        ${ES_ESTUDIO ? `
+        <div class="upload-area" id="drop-pres-${fase.numero}" onclick="document.getElementById('file-pres-${fase.numero}').click()">
+          <input type="file" id="file-pres-${fase.numero}" accept="image/*,.pdf,.doc,.docx" onchange="adjuntarPresupuesto(${fase.numero}, event)">
+          <div class="upload-text"><span class="up-ico">↑</span> Subí un documento o arrastralo aquí</div>
+        </div>` : ''}
+        <div class="archivos-list">${items}</div>
+      </div>
+    `;
+  }).join('');
+
+  // Activar drag & drop en cada zona (solo estudio)
+  if(ES_ESTUDIO) {
+    fases.forEach(fase => activarDrop(`drop-pres-${fase.numero}`, (file) => adjuntarPresupuesto(fase.numero, file)));
+  }
+}
+
+// INICIALIZAR
+function conectarNube() {
+  const activar = () => {
+    if(!window.FB || !window.FB.ready) return false;
+    NUBE.activa = true;
+    fases.forEach(fase => {
+      nubeEscuchar(`archivos_fase_${fase.numero}`, (arr) => {
+        localStorage.setItem(kArchivos(fase.numero), JSON.stringify(arr));
+        renderizarFases();
+      });
+      nubeEscuchar(`presupuestos_fase_${fase.numero}`, (arr) => {
+        localStorage.setItem(kPresupuestosFase(fase.numero), JSON.stringify(arr));
+        renderizarPresupuestos();
+      });
+    });
+    nubeEscuchar('mensajes', (arr) => {
+      localStorage.setItem(kChat(), JSON.stringify(arr));
+      renderizarChat();
+      const mv = document.getElementById('mensajes').classList.contains('active');
+      if(mv) marcarChatLeido();
+      actualizarBadge();
+    });
+    return true;
+  };
+  if(!activar()) window.addEventListener('firebase-ready', activar, { once: true });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  pintarObra();
+  const fecha = new Date().toLocaleDateString('es-AR');
+  const fEl = document.getElementById('fechaAceptacion');
+  if(fEl) fEl.textContent = fecha;
+
+  // Ajustes según rol
+  aplicarPermisos();
+
+  renderizarFases();
+  renderizarPresupuestos();
+  renderizarChat();
+  actualizarBadge();
+
+  // Conectar a la nube (Firestore): cargar y escuchar cambios en tiempo real
+  conectarNube();
+
+  // Refrescar el badge periódicamente y ante cambios en otras pestañas del navegador
+  setInterval(() => {
+    // Si el usuario está viendo la pestaña de mensajes, se considera leído
+    const mensajesVisible = document.getElementById('mensajes').classList.contains('active');
+    if(mensajesVisible) { marcarChatLeido(); renderizarChat(); }
+    actualizarBadge();
+  }, 3000);
+  window.addEventListener('storage', (e) => {
+    if(e.key === kChat()) {
+      const mensajesVisible = document.getElementById('mensajes').classList.contains('active');
+      if(mensajesVisible) { marcarChatLeido(); renderizarChat(); }
+      actualizarBadge();
+    }
+  });
+});
+
+/* ============================================================
+   PERMISOS SEGÚN ROL
+   ============================================================ */
+function aplicarPermisos() {
+  // Descripción de presupuestos según rol
+  const pd = document.getElementById('presupuestos-desc');
+  if(pd) pd.textContent = ES_ESTUDIO
+    ? 'Subí y organizá los documentos de presupuesto por fase de obra.'
+    : 'Documentos de presupuesto organizados por fase de obra.';
+  // Descripción del chat según rol
+  const md = document.getElementById('mensajes-desc');
+  if(md) md.textContent = ES_ESTUDIO
+    ? 'Respondé las consultas del cliente sobre el proyecto.'
+    : 'Escribí tus consultas o comentarios. El estudio te responde por aquí.';
+}
+
+/* ============================================================
+   CHAT / MENSAJES  (compartido por obra)
+   ============================================================ */
+function kChat() { return `chat_${OBRA_KEY}`; }
+// Marca de última lectura, separada por rol y obra
+function kUltimaLectura() { return `chat_${OBRA_KEY}_leido_${ES_ESTUDIO ? 'estudio' : 'cliente'}`; }
+
+function obtenerUltimaLectura() {
+  const v = localStorage.getItem(kUltimaLectura());
+  return v ? parseInt(v, 10) : 0;
+}
+function marcarChatLeido() {
+  localStorage.setItem(kUltimaLectura(), Date.now().toString());
+}
+// Cuenta mensajes del OTRO rol posteriores a la última lectura
+function contarNoLeidos() {
+  const miRol = ES_ESTUDIO ? 'estudio' : 'cliente';
+  const ultima = obtenerUltimaLectura();
+  return obtenerMensajes().filter(m => m.autor !== miRol && (m.ts || 0) > ultima).length;
+}
+function actualizarBadge() {
+  const badge = document.getElementById('msgBadge');
+  if(!badge) return;
+  const n = contarNoLeidos();
+  if(n > 0) {
+    badge.textContent = n > 9 ? '9+' : n;
+    badge.style.display = 'inline-flex';
+    badge.classList.add('pulsa');
+  } else {
+    badge.style.display = 'none';
+    badge.classList.remove('pulsa');
+  }
+}
+
+function obtenerMensajes() {
+  const stored = localStorage.getItem(kChat());
+  if(!stored) return [];
+  try { return JSON.parse(stored); } catch { return []; }
+}
+function guardarMensajes(msgs) {
+  localStorage.setItem(kChat(), JSON.stringify(msgs));
+  nubeGuardarColeccion('mensajes', msgs);
+}
+function enviarMensaje() {
+  const input = document.getElementById('chatInput');
+  if(!input) return;
+  const texto = input.value.trim();
+  if(!texto) return;
+  const msgs = obtenerMensajes();
+  msgs.push({
+    autor: ES_ESTUDIO ? 'estudio' : 'cliente',
+    texto: texto,
+    ts: Date.now(),
+    fecha: new Date().toLocaleString('es-AR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})
+  });
+  guardarMensajes(msgs);
+  input.value = '';
+  input.style.height = 'auto';
+  renderizarChat();
+  // Quien envía ya está viendo el chat: marcar leído y refrescar badge
+  marcarChatLeido();
+  actualizarBadge();
+}
+function renderizarChat() {
+  const hilo = document.getElementById('chatHilo');
+  if(!hilo) return;
+  const msgs = obtenerMensajes();
+  if(!msgs.length) {
+    hilo.innerHTML = `<div class="chat-vacio">Todavía no hay mensajes. ${ES_ESTUDIO ? 'Cuando el cliente escriba, aparecerá aquí.' : 'Escribí el primero para iniciar la conversación.'}</div>`;
+    return;
+  }
+  hilo.innerHTML = msgs.map(m => {
+    const etiqueta = m.autor === 'estudio' ? 'Estudio' : 'Cliente';
+    return `
+      <div class="chat-msg ${m.autor}">
+        <div class="burbuja">${escapeHtml(m.texto)}</div>
+        <div class="meta">${etiqueta} · ${m.fecha || ''}</div>
+      </div>`;
+  }).join('');
+  hilo.scrollTop = hilo.scrollHeight;
+}
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+// Enviar con Enter (Shift+Enter = salto de línea) y autoexpandir
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById('chatInput');
+  if(!input) return;
+  input.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); enviarMensaje(); }
+  });
+  input.addEventListener('input', function(){
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+  });
+});
+</script>
+
+</body>
+</html>
