@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<!--
+============================================================================
+  ⚠️  NOTA IMPORTANTE — MIGRACIÓN A DOMINIO PROPIO
+============================================================================
+  Esta sección (gestión de habitaciones) está pensada para migrar en el
+  futuro a un DOMINIO DISTINTO, separado de lafinurstudio.com.
+
+  Al migrar, revisar y cambiar lo siguiente:
+
+  1) FIREBASE (base de datos) — lo más importante:
+     - Hoy usa, de forma TEMPORAL, las credenciales del proyecto
+       'lafinurstudio'. Para el dominio nuevo hay que crear un PROYECTO
+       FIREBASE PROPIO e independiente y reemplazar el bloque
+       'firebaseConfig' que está más abajo (buscar el comentario
+       "CREDENCIALES FIREBASE").
+     - Así los datos de habitaciones quedan separados de lafinurstudio.
+
+  2) ENLACES INTERNOS:
+     - Los botones "Volver" apuntan a 'proveedores.html' e 'index.html'
+       de lafinurstudio. Al migrar, redirigirlos a las páginas del sitio
+       nuevo o quitarlos.
+
+  3) CONTRASEÑA DE ACCESO:
+     - La contraseña ('guatamare') está definida en la constante PASSWORD
+       dentro del <script> principal. Revisar/cambiar al migrar.
+
+  4) REGLAS DE FIRESTORE:
+     - La colección se llama 'habitaciones'. Asegurarse de que las reglas
+       del Firebase nuevo permitan leer/escribir esa colección.
+============================================================================
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gestión de Habitaciones · Lafinur Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cal:#F2EFE9; --papel:#FBFAF7; --granito:#2E3134; --granito-2:#6A6F74;
+  --roble:#B08147; --cobre:#9C5B3C; --verde:#4A6B5F; --verde-2:#3d5849;
+  --verde-bg:#E7EDE9; --linea:#E4DFD5; --linea-2:#D6D0C4;
+  --sombra-sm:0 2px 8px rgba(46,49,52,.05);
+  --sombra:0 12px 34px -14px rgba(46,49,52,.16);
+  --sombra-lg:0 26px 60px -22px rgba(46,49,52,.24);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--cal);color:var(--granito);font-family:'Inter',sans-serif;font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* PASSWORD GATE */
+#password-gate{position:fixed;inset:0;background:var(--cal);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px}
+.password-card{max-width:420px;width:100%;background:white;border:1px solid var(--linea);border-radius:24px;padding:44px 40px;box-shadow:var(--sombra-lg);text-align:center}
+.pw-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--cobre);margin-bottom:16px}
+.password-card h1{font-family:'Playfair Display',serif;font-weight:400;font-size:30px;margin-bottom:10px}
+.password-card p{font-size:14px;color:var(--granito-2);margin-bottom:26px}
+.password-input{width:100%;padding:14px 16px;border:1px solid var(--linea-2);border-radius:12px;font-family:'Inter';font-size:14px;margin-bottom:12px}
+.password-input:focus{outline:none;border-color:var(--verde)}
+.password-error{display:none;color:var(--cobre);font-size:12px;margin-bottom:12px}
+.btn-submit{width:100%;padding:14px;background:var(--verde);color:white;border:none;border-radius:100px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 10px 24px -10px rgba(74,107,95,.7);margin-bottom:10px}
+.btn-submit:hover{background:var(--verde-2);transform:translateY(-1px)}
+.btn-secondary{width:100%;padding:13px;background:transparent;color:var(--granito-2);border:1px solid var(--linea-2);border-radius:100px;font-size:13.5px;font-weight:500;cursor:pointer;font-family:'Inter'}
+.btn-secondary:hover{border-color:var(--granito-2)}
+.pw-recovery{display:inline-block;margin-top:18px;color:var(--cobre);text-decoration:none;font-size:13px;cursor:pointer}
+.pw-recovery:hover{opacity:.8}
+
+/* APP */
+#app{display:none;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--linea);background:var(--papel);position:sticky;top:0;z-index:50}
+.brand{font-family:'Playfair Display',serif;font-size:20px;color:var(--granito);text-decoration:none}
+.brand span{color:var(--verde)}
+.back-btn{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--granito-2);text-decoration:none;cursor:pointer}
+.back-btn:hover{color:var(--cobre)}
+
+.container{max-width:1100px;margin:0 auto;padding:40px 28px 80px}
+.head-row{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;margin-bottom:8px}
+h1.page-title{font-family:'Playfair Display',serif;font-weight:400;font-size:38px}
+.page-desc{font-size:14px;color:var(--granito-2);margin-bottom:32px}
+.btn-nueva{background:var(--verde);color:white;border:none;border-radius:100px;padding:13px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter';transition:all .2s;white-space:nowrap}
+.btn-nueva:hover{background:var(--verde-2);transform:translateY(-1px)}
+
+/* GRID DE HABITACIONES */
+.habitaciones-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px}
+.hab-card{background:var(--papel);border:1px solid var(--linea);border-radius:18px;overflow:hidden;transition:all .25s;box-shadow:var(--sombra-sm)}
+.hab-card:hover{transform:translateY(-4px);box-shadow:var(--sombra)}
+.hab-foto{width:100%;height:200px;object-fit:cover;background:var(--verde-bg);display:block}
+.hab-foto-placeholder{width:100%;height:200px;background:var(--verde-bg);display:flex;align-items:center;justify-content:center;color:var(--verde);font-size:40px}
+.hab-body{padding:20px}
+.hab-nombre{font-family:'Fraunces',serif;font-weight:500;font-size:20px;margin-bottom:6px}
+.hab-precio{font-size:16px;color:var(--verde);font-weight:600;margin-bottom:10px}
+.hab-precio span{font-size:12px;color:var(--granito-2);font-weight:400}
+.hab-datos{display:flex;gap:14px;font-size:12.5px;color:var(--granito-2);margin-bottom:12px;flex-wrap:wrap}
+.hab-desc{font-size:13.5px;color:var(--granito);margin-bottom:12px;line-height:1.55}
+.hab-servicios{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.hab-serv-tag{font-size:11px;background:var(--verde-bg);color:var(--verde);padding:4px 10px;border-radius:100px;font-family:'JetBrains Mono',monospace}
+.hab-estado{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 12px;border-radius:100px;margin-bottom:14px}
+.hab-estado.disponible{background:#E7EDE9;color:#4A6B5F}
+.hab-estado.ocupada{background:#F3E4DA;color:#9C5B3C}
+.hab-estado .dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.hab-acciones{display:flex;gap:8px;border-top:1px solid var(--linea);padding-top:14px}
+.hab-btn{flex:1;padding:9px;border-radius:100px;border:1px solid var(--linea-2);background:white;color:var(--granito);font-size:12.5px;font-weight:500;cursor:pointer;font-family:'Inter';transition:all .18s}
+.hab-btn:hover{background:var(--cal)}
+.hab-btn.editar:hover{border-color:var(--verde);color:var(--verde)}
+.hab-btn.borrar:hover{border-color:var(--cobre);color:var(--cobre)}
+
+.vacio{text-align:center;padding:70px 20px;color:var(--granito-2)}
+.vacio h3{font-family:'Fraunces',serif;font-weight:500;font-size:22px;color:var(--granito);margin-bottom:10px}
+
+/* MODAL FORMULARIO */
+.modal{display:none;position:fixed;inset:0;z-index:200;background:rgba(46,49,52,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto}
+.modal-card{background:var(--cal);border-radius:20px;max-width:600px;width:100%;padding:32px;box-shadow:var(--sombra-lg)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.modal-header h2{font-family:'Playfair Display',serif;font-weight:400;font-size:26px}
+.modal-cerrar{background:none;border:1px solid var(--linea);border-radius:50%;width:38px;height:38px;font-size:15px;cursor:pointer;color:var(--granito-2)}
+.modal-cerrar:hover{background:white}
+.form-grupo{margin-bottom:18px}
+.form-grupo label{display:block;font-size:13px;font-weight:500;color:var(--granito);margin-bottom:7px}
+.form-grupo input,.form-grupo textarea,.form-grupo select{width:100%;padding:11px 14px;border:1px solid var(--linea-2);border-radius:10px;font-family:'Inter';font-size:14px;background:white}
+.form-grupo input:focus,.form-grupo textarea:focus,.form-grupo select:focus{outline:none;border-color:var(--verde)}
+.form-grupo textarea{resize:vertical;min-height:70px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-fotos{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.form-foto-mini{width:70px;height:70px;border-radius:8px;object-fit:cover;position:relative}
+.form-foto-wrap{position:relative}
+.form-foto-wrap .quitar{position:absolute;top:-6px;right:-6px;background:var(--cobre);color:white;border:none;border-radius:50%;width:20px;height:20px;font-size:11px;cursor:pointer}
+.drop-fotos{border:2px dashed var(--linea-2);border-radius:10px;padding:20px;text-align:center;color:var(--granito-2);cursor:pointer;font-size:13px;margin-top:8px}
+.drop-fotos:hover{border-color:var(--verde);background:var(--verde-bg)}
+.servicios-check{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.serv-opt{font-size:12.5px;padding:7px 13px;border:1px solid var(--linea-2);border-radius:100px;cursor:pointer;transition:all .18s;user-select:none}
+.serv-opt.activo{background:var(--verde);color:white;border-color:var(--verde)}
+.modal-acciones{display:flex;gap:10px;margin-top:24px}
+.modal-guardar{flex:1;padding:14px;background:var(--verde);color:white;border:none;border-radius:100px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter'}
+.modal-guardar:hover{background:var(--verde-2)}
+.cargando{text-align:center;padding:60px;color:var(--granito-2);font-size:14px}
+
+@media(max-width:600px){
+  .topbar{padding:16px 20px}
+  .container{padding:28px 20px 60px}
+  h1.page-title{font-size:30px}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import { getFirestore, collection, doc, getDocs, setDoc, deleteDoc, onSnapshot }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+  // ⚠️ CREDENCIALES FIREBASE — TEMPORALES (proyecto 'lafinurstudio')
+  // AL MIGRAR A DOMINIO PROPIO: reemplazar TODO este bloque por las
+  // credenciales de un proyecto Firebase NUEVO e independiente.
+  // (ver nota de migración al inicio del archivo)
+  const firebaseConfig = {
+    apiKey: "AIzaSyBtfugXk5ZsI5SZ8V-QyxWOzz7-5hFU8U8",
+    authDomain: "lafinurstudio.firebaseapp.com",
+    projectId: "lafinurstudio",
+    storageBucket: "lafinurstudio.firebasestorage.app",
+    messagingSenderId: "383108792937",
+    appId: "1:383108792937:web:6a6be95caa1171f968d8f8"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  window.FB = { ready:true, db, collection, doc, getDocs, setDoc, deleteDoc, onSnapshot };
+  window.dispatchEvent(new Event('firebase-ready'));
+</script>
+</head>
+<body>
+
+<!-- PANTALLA DE CONTRASEÑA -->
+<div id="password-gate">
+  <div class="password-card">
+    <div id="admin-login-view">
+      <div class="pw-eyebrow">Acceso privado</div>
+      <h1>Gestión de Habitaciones</h1>
+      <p>Ingresá tu contraseña para administrar las habitaciones</p>
+      <form onsubmit="verificarContrasena(event)">
+        <input type="password" id="pass-input" class="password-input" placeholder="Contraseña" autofocus>
+        <div id="pass-error" class="password-error">Contraseña incorrecta</div>
+        <button type="submit" class="btn-submit">Acceder</button>
+        <button type="button" class="btn-secondary" onclick="window.location.href='habitaciones-inicio.html'">Volver</button>
+      </form>
+      <a class="pw-recovery" onclick="mostrarRecuperacionAdmin()">¿Olvidaste la contraseña?</a>
+    </div>
+    <div id="admin-recovery-view" style="display:none">
+      <div class="pw-eyebrow">Recuperar contraseña</div>
+      <h1>Administración</h1>
+      <div id="admin-recovery-form">
+        <p>Solicitá la contraseña al estudio. Te van a responder a la brevedad.</p>
+        <input type="email" id="admin-recovery-email" class="password-input" placeholder="Tu email de contacto (opcional)">
+        <textarea id="admin-recovery-msg" class="password-input" rows="2" placeholder="Mensaje (opcional)" style="resize:none"></textarea>
+        <button type="button" class="btn-submit" onclick="enviarSolicitudAdmin()">Enviar solicitud al estudio</button>
+        <button type="button" class="btn-secondary" onclick="volverALoginAdmin()">Volver</button>
+      </div>
+      <div id="admin-recovery-sent" style="display:none">
+        <p style="color:var(--verde);background:var(--verde-bg);padding:16px;border-radius:12px">✓ Solicitud enviada. El estudio te va a contactar con la contraseña.</p>
+        <button type="button" class="btn-secondary" onclick="volverALoginAdmin()">Volver</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="brand">Lafinur <span>Studio</span></a>
+    <a class="back-btn" onclick="window.location.href='proveedores.html'">← Volver a proveedores</a>
+  </div>
+
+  <div class="container">
+    <div class="head-row">
+      <div>
+        <h1 class="page-title">Habitaciones</h1>
+      </div>
+      <button class="btn-nueva" onclick="abrirFormulario()">+ Nueva habitación</button>
+    </div>
+    <p class="page-desc">Gestioná el catálogo de habitaciones: fotos, precios, servicios y disponibilidad.</p>
+
+    <div id="lista-habitaciones" class="cargando">Cargando habitaciones…</div>
+  </div>
+</div>
+
+<!-- MODAL FORMULARIO -->
+<div id="form-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2 id="form-titulo">Nueva habitación</h2>
+      <button class="modal-cerrar" onclick="cerrarFormulario()">✕</button>
+    </div>
+    <div class="form-grupo">
+      <label>Nombre de la habitación</label>
+      <input type="text" id="f-nombre" placeholder="Ej: Suite con vista al jardín">
+    </div>
+    <div class="form-row">
+      <div class="form-grupo">
+        <label>Precio por noche (USD)</label>
+        <input type="number" id="f-precio" placeholder="80">
+      </div>
+      <div class="form-grupo">
+        <label>Capacidad (personas)</label>
+        <input type="number" id="f-capacidad" placeholder="2">
+      </div>
+    </div>
+    <div class="form-grupo">
+      <label>Descripción</label>
+      <textarea id="f-descripcion" placeholder="Describí la habitación, su ambiente y características..."></textarea>
+    </div>
+    <div class="form-grupo">
+      <label>Servicios</label>
+      <div class="servicios-check" id="f-servicios">
+        <!-- se generan por JS -->
+      </div>
+    </div>
+    <div class="form-grupo">
+      <label>Estado</label>
+      <select id="f-estado">
+        <option value="disponible">Disponible</option>
+        <option value="ocupada">Ocupada</option>
+      </select>
+    </div>
+    <div class="form-grupo">
+      <label>Fotos</label>
+      <div class="drop-fotos" id="drop-fotos" onclick="document.getElementById('f-fotos-input').click()">
+        <input type="file" id="f-fotos-input" accept="image/*" multiple style="display:none" onchange="agregarFotos(event)">
+        ↑ Subí fotos o arrastralas aquí
+      </div>
+      <div class="form-fotos" id="f-fotos-preview"></div>
+    </div>
+    <div class="modal-acciones">
+      <button class="btn-secondary" style="flex:1" onclick="cerrarFormulario()">Cancelar</button>
+      <button class="modal-guardar" onclick="guardarHabitacion()">Guardar habitación</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const PASSWORD = 'guatamare';
+const SERVICIOS_DISPONIBLES = ['WiFi','Baño privado','Aire acondicionado','Calefacción','TV','Cocina','Desayuno','Ropa de cama','Estacionamiento','Mascotas'];
+
+let habitaciones = [];
+let fotosActuales = [];   // fotos (dataURL) del formulario en edición
+let serviciosActuales = []; // servicios seleccionados en el formulario
+let editandoId = null;
+
+/* ===== ACCESO ===== */
+function verificarContrasena(e){
+  e.preventDefault();
+  const val = document.getElementById('pass-input').value;
+  if(val === PASSWORD){
+    document.getElementById('password-gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    cargarHabitaciones();
+  } else {
+    document.getElementById('pass-error').style.display = 'block';
+  }
+}
+
+const EMAIL_ESTUDIO = 'ami@lafinurstudio.com';
+function mostrarRecuperacionAdmin(){
+  document.getElementById('admin-login-view').style.display = 'none';
+  document.getElementById('admin-recovery-view').style.display = 'block';
+  document.getElementById('admin-recovery-form').style.display = 'block';
+  document.getElementById('admin-recovery-sent').style.display = 'none';
+  const em=document.getElementById('admin-recovery-email'); if(em) em.value='';
+  const ms=document.getElementById('admin-recovery-msg'); if(ms) ms.value='';
+}
+function volverALoginAdmin(){
+  document.getElementById('admin-recovery-view').style.display = 'none';
+  document.getElementById('admin-login-view').style.display = 'block';
+}
+function enviarSolicitudAdmin(){
+  const email = (document.getElementById('admin-recovery-email').value||'').trim();
+  const mensaje = (document.getElementById('admin-recovery-msg').value||'').trim();
+  const fecha = new Date().toLocaleString('es-AR');
+  const asunto = encodeURIComponent('Solicitud de contraseña · Administración de habitaciones');
+  const cuerpo = encodeURIComponent(
+    'Hola, solicito la contraseña de acceso al panel de administración de habitaciones.\n\n'+
+    (email?`Mi email de contacto: ${email}\n`:'')+
+    (mensaje?`Mensaje: ${mensaje}\n`:'')+
+    `\nFecha de solicitud: ${fecha}`
+  );
+  window.location.href = `mailto:${EMAIL_ESTUDIO}?subject=${asunto}&body=${cuerpo}`;
+  document.getElementById('admin-recovery-form').style.display = 'none';
+  document.getElementById('admin-recovery-sent').style.display = 'block';
+}
+
+/* ===== FIREBASE ===== */
+function colHabitaciones(){
+  const { db, collection } = window.FB;
+  return collection(db, 'habitaciones');
+}
+async function cargarHabitaciones(){
+  const cont = document.getElementById('lista-habitaciones');
+  if(!window.FB || !window.FB.ready){
+    // esperar a firebase
+    window.addEventListener('firebase-ready', cargarHabitaciones, { once:true });
+    return;
+  }
+  try{
+    const snap = await window.FB.getDocs(colHabitaciones());
+    habitaciones = [];
+    snap.forEach(d => habitaciones.push({ id:d.id, ...d.data() }));
+    renderHabitaciones();
+  }catch(e){
+    cont.className = 'vacio';
+    cont.innerHTML = '<h3>No se pudieron cargar</h3><p>Revisá tu conexión e intentá de nuevo.</p>';
+    console.warn('Cargar habitaciones:', e);
+  }
+}
+function renderHabitaciones(){
+  const cont = document.getElementById('lista-habitaciones');
+  if(habitaciones.length === 0){
+    cont.className = 'vacio';
+    cont.innerHTML = '<h3>Todavía no hay habitaciones</h3><p>Tocá "Nueva habitación" para agregar la primera.</p>';
+    return;
+  }
+  cont.className = 'habitaciones-grid';
+  cont.innerHTML = habitaciones.map(h => {
+    const foto = (h.fotos && h.fotos.length) ? `<img src="${h.fotos[0]}" class="hab-foto" alt="${escapeH(h.nombre)}">` : `<div class="hab-foto-placeholder">⌂</div>`;
+    const servicios = (h.servicios||[]).map(s => `<span class="hab-serv-tag">${escapeH(s)}</span>`).join('');
+    const estadoClase = h.estado === 'ocupada' ? 'ocupada' : 'disponible';
+    const estadoTxt = h.estado === 'ocupada' ? 'Ocupada' : 'Disponible';
+    return `
+      <div class="hab-card">
+        ${foto}
+        <div class="hab-body">
+          <div class="hab-estado ${estadoClase}"><span class="dot"></span>${estadoTxt}</div>
+          <div class="hab-nombre">${escapeH(h.nombre||'Sin nombre')}</div>
+          <div class="hab-precio">USD $${Number(h.precio||0).toLocaleString('en-US')} <span>/ noche</span></div>
+          <div class="hab-datos">
+            <span>◪ ${h.capacidad||1} ${(h.capacidad==1)?'persona':'personas'}</span>
+            ${(h.fotos&&h.fotos.length)?`<span>▤ ${h.fotos.length} ${h.fotos.length==1?'foto':'fotos'}</span>`:''}
+          </div>
+          ${h.descripcion?`<div class="hab-desc">${escapeH(h.descripcion)}</div>`:''}
+          ${servicios?`<div class="hab-servicios">${servicios}</div>`:''}
+          <div class="hab-acciones">
+            <button class="hab-btn editar" onclick="editarHabitacion('${h.id}')">Editar</button>
+            <button class="hab-btn borrar" onclick="borrarHabitacion('${h.id}')">Eliminar</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+function escapeH(s){ return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ===== FORMULARIO ===== */
+function renderServiciosCheck(){
+  const cont = document.getElementById('f-servicios');
+  cont.innerHTML = SERVICIOS_DISPONIBLES.map(s =>
+    `<div class="serv-opt ${serviciosActuales.includes(s)?'activo':''}" onclick="toggleServicio('${s}')">${s}</div>`
+  ).join('');
+}
+function toggleServicio(s){
+  const i = serviciosActuales.indexOf(s);
+  if(i>=0) serviciosActuales.splice(i,1); else serviciosActuales.push(s);
+  renderServiciosCheck();
+}
+function abrirFormulario(){
+  editandoId = null;
+  fotosActuales = [];
+  serviciosActuales = [];
+  document.getElementById('form-titulo').textContent = 'Nueva habitación';
+  document.getElementById('f-nombre').value = '';
+  document.getElementById('f-precio').value = '';
+  document.getElementById('f-capacidad').value = '';
+  document.getElementById('f-descripcion').value = '';
+  document.getElementById('f-estado').value = 'disponible';
+  renderServiciosCheck();
+  renderFotosPreview();
+  document.getElementById('form-modal').style.display = 'flex';
+}
+function editarHabitacion(id){
+  const h = habitaciones.find(x => x.id === id);
+  if(!h) return;
+  editandoId = id;
+  fotosActuales = (h.fotos||[]).slice();
+  serviciosActuales = (h.servicios||[]).slice();
+  document.getElementById('form-titulo').textContent = 'Editar habitación';
+  document.getElementById('f-nombre').value = h.nombre||'';
+  document.getElementById('f-precio').value = h.precio||'';
+  document.getElementById('f-capacidad').value = h.capacidad||'';
+  document.getElementById('f-descripcion').value = h.descripcion||'';
+  document.getElementById('f-estado').value = h.estado||'disponible';
+  renderServiciosCheck();
+  renderFotosPreview();
+  document.getElementById('form-modal').style.display = 'flex';
+}
+function cerrarFormulario(){
+  document.getElementById('form-modal').style.display = 'none';
+}
+function agregarFotos(event){
+  const files = event.target ? event.target.files : event;
+  if(!files || !files.length) return;
+  Array.from(files).forEach(file => {
+    if(!file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        // comprimir a máx 1000px, JPEG 0.7 (para entrar en Firestore)
+        const MAX = 1000;
+        let w = img.width, h = img.height;
+        if(w>h && w>MAX){ h=Math.round(h*MAX/w); w=MAX; }
+        else if(h>MAX){ w=Math.round(w*MAX/h); h=MAX; }
+        const canvas = document.createElement('canvas');
+        canvas.width=w; canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        fotosActuales.push(canvas.toDataURL('image/jpeg',0.7));
+        renderFotosPreview();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('f-fotos-input').value = '';
+}
+function renderFotosPreview(){
+  const cont = document.getElementById('f-fotos-preview');
+  cont.innerHTML = fotosActuales.map((f,i) =>
+    `<div class="form-foto-wrap"><img src="${f}" class="form-foto-mini"><button class="quitar" onclick="quitarFoto(${i})">✕</button></div>`
+  ).join('');
+}
+function quitarFoto(i){ fotosActuales.splice(i,1); renderFotosPreview(); }
+
+async function guardarHabitacion(){
+  const nombre = document.getElementById('f-nombre').value.trim();
+  if(!nombre){ alert('Poné un nombre a la habitación.'); return; }
+  const hab = {
+    nombre,
+    precio: Number(document.getElementById('f-precio').value)||0,
+    capacidad: Number(document.getElementById('f-capacidad').value)||1,
+    descripcion: document.getElementById('f-descripcion').value.trim(),
+    estado: document.getElementById('f-estado').value,
+    servicios: serviciosActuales.slice(),
+    fotos: fotosActuales.slice(),
+    actualizado: new Date().toISOString()
+  };
+  try{
+    const { doc, setDoc } = window.FB;
+    const id = editandoId || ('hab_'+Date.now()+'_'+Math.random().toString(36).slice(2,7));
+    await setDoc(doc(colHabitaciones(), id), hab);
+    cerrarFormulario();
+    cargarHabitaciones();
+  }catch(e){
+    alert('No se pudo guardar. Puede que alguna foto sea muy pesada.');
+    console.warn('Guardar habitación:', e);
+  }
+}
+async function borrarHabitacion(id){
+  if(!confirm('¿Eliminar esta habitación? No se puede deshacer.')) return;
+  try{
+    const { doc, deleteDoc } = window.FB;
+    await deleteDoc(doc(colHabitaciones(), id));
+    cargarHabitaciones();
+  }catch(e){ console.warn('Borrar habitación:', e); }
+}
+
+/* drag & drop fotos */
+document.addEventListener('DOMContentLoaded', function(){
+  const drop = document.getElementById('drop-fotos');
+  if(!drop) return;
+  ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();drop.style.borderColor='var(--verde)';}));
+  ['dragleave','dragend','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();drop.style.borderColor='';}));
+  drop.addEventListener('drop', e=>{ const f=e.dataTransfer&&e.dataTransfer.files; if(f&&f.length) agregarFotos(f); });
+});
+</script>
+</body>
+</html>
