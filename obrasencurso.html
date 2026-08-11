@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Obra · Cocina y lavadero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Dream+Avenue&family=Glacial+Indifference&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{
+  --cal:#F2EFE9; --granito:#2E3134; --granito-2:#5A5F64;
+  --roble:#B08147; --cobre:#9C5B3C; --verde:#4A6B5F; --verde-2:#3d5849;
+  --verde-bg:#E4EBE6; --linea:#D6D0C4; --linea-2:#D6D0C4; --papel:#FBFAF7;
+  --amber-bg:#F3E9DA; --cal-2:#E3DED4;
+  --sombra-lg:0 22px 50px -20px rgba(46,49,52,.22);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--cal);color:var(--granito);
+  font-family:'Inter',sans-serif;font-weight:300;line-height:1.6;
+  -webkit-font-smoothing:antialiased;padding-bottom:80px;
+}
+.wrap{max-width:860px;margin:0 auto;padding:0 22px}
+h1,h2,h3,h4{letter-spacing:-.015em}
+
+/* contrato gate */
+#contrato-gate{position:fixed;inset:0;background:var(--cal);z-index:200;
+  display:none;align-items:center;justify-content:center;padding:24px}
+#contrato-gate .contrato-container{
+  max-width:900px;width:100%;background:white;border-radius:8px;
+  display:flex;flex-direction:column;max-height:90vh;box-shadow:0 8px 32px rgba(0,0,0,.1)}
+#contrato-gate .contrato-header{
+  background:#a3c6a8;padding:40px;color:white;border-bottom:1px solid var(--linea)}
+#contrato-gate .contrato-header h1{
+  font-family:'Dream Avenue',serif;font-size:32px;font-weight:700;margin-bottom:8px}
+#contrato-gate .contrato-header .meta{
+  font-size:14px;line-height:1.6;font-family:'Glacial Indifference',sans-serif}
+#contrato-gate .contrato-content{
+  padding:40px;max-height:350px;overflow-y:auto;background:white;font-family:'Glacial Indifference',sans-serif;font-size:13px;line-height:1.7;color:var(--granito-2)}
+#contrato-gate .contrato-content h2{
+  font-family:'Glacial Indifference',sans-serif;font-size:15px;font-weight:600;color:#af7347;margin:24px 0 14px 0;letter-spacing:0.02em;text-transform:uppercase}
+#contrato-gate .contrato-content h3{
+  font-family:'Glacial Indifference',sans-serif;font-size:13px;font-weight:600;color:#af7347;margin:16px 0 10px 0;letter-spacing:0.02em;text-transform:uppercase}
+#contrato-gate .contrato-content p{margin-bottom:12px}
+#contrato-gate .contrato-content ul{margin:12px 0 12px 20px}
+#contrato-gate .contrato-content li{margin-bottom:6px}
+#contrato-gate .contrato-footer{
+  padding:40px;background:white;border-top:1px solid var(--linea)}
+#contrato-gate .checkbox-group{
+  display:flex;gap:12px;margin-bottom:20px;padding:16px;background:#F3E9DA;border-radius:4px}
+#contrato-gate .checkbox-group input{width:18px;height:18px;cursor:pointer;accent-color:#9C5B3C;margin-top:2px}
+#contrato-gate .checkbox-group label{cursor:pointer;font-size:13px;font-weight:500}
+#contrato-gate .contrato-actions{
+  display:grid;grid-template-columns:1fr;gap:12px}
+#contrato-gate .btn-accept{
+  padding:12px 20px;background:#4A6B5F;color:white;border:none;border-radius:4px;
+  font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+#contrato-gate .btn-accept:hover:not(:disabled){background:#3d5849;transform:translateY(-1px)}
+#contrato-gate .btn-accept:disabled{opacity:.5;cursor:not-allowed}
+
+/* MAPA OBRAS GATE */
+#map-gate{position:fixed;inset:0;background:var(--cal);z-index:100;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+#map-container{width:100%;max-width:1000px;height:70vh;border-radius:12px;
+  box-shadow:0 8px 32px rgba(0,0,0,.1);overflow:hidden}
+#leaflet-map{width:100%;height:100%;background:white}
+.map-header{text-align:center;margin-bottom:30px;z-index:10}
+.map-header h1{font-family:'Fraunces',serif;font-weight:300;font-size:32px;margin-bottom:8px}
+.map-header p{font-size:14px;color:var(--granito-2)}
+.map-info{background:white;padding:16px 20px;border-radius:8px;margin-top:20px;
+  text-align:center;font-size:13px;color:var(--granito-2);max-width:1000px}
+
+/* Popup de Leaflet personalizado */
+.leaflet-popup-content-wrapper{border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.leaflet-popup-content{font-family:'Inter',sans-serif;font-size:13px}
+.popup-title{font-family:'Fraunces',serif;font-size:16px;font-weight:400;
+  color:var(--granito);margin-bottom:8px}
+.popup-address{font-size:12px;color:var(--granito-2);margin-bottom:12px}
+.popup-select-btn{background:var(--verde);color:white;border:none;padding:8px 14px;
+  border-radius:4px;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s}
+.popup-select-btn:hover{background:#3d5849}
+
+/* gate */
+#gate{position:fixed;inset:0;background:var(--cal);z-index:100;
+  display:flex;align-items:center;justify-content:center;padding:24px}
+#obras-gate,#password-gate{position:fixed;inset:0;background:var(--cal);z-index:100;
+  display:flex;align-items:center;justify-content:center;padding:24px}
+.gate-card{max-width:440px;width:100%;text-align:center}
+.gate-card .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--cobre);margin-bottom:24px}
+.gate-card h1{font-family:'Fraunces',serif;font-weight:300;font-size:34px;margin-bottom:12px}
+.gate-card p{font-size:15px;color:var(--granito-2);margin-bottom:32px}
+/* Tarjeta de contraseña estilo Servicios Profesionales */
+.password-card {
+  max-width: 420px; width: 100%;
+  background: white; border: 1px solid var(--linea);
+  border-radius: 24px; padding: 44px 40px;
+  box-shadow: var(--sombra-lg); text-align: center;
+}
+.password-card .pw-eyebrow {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--cobre); margin-bottom: 16px;
+}
+.password-card h1 {
+  font-family: 'Fraunces', serif; font-weight: 400; font-size: 32px;
+  margin-bottom: 10px; color: var(--granito);
+}
+.password-card p { font-size: 14px; color: var(--granito-2); margin-bottom: 26px; }
+.password-input {
+  width: 100%; padding: 14px 16px; border: 1px solid var(--linea-2);
+  border-radius: 12px; font-family: 'Inter'; font-size: 14px; margin-bottom: 12px;
+  transition: border-color .2s ease;
+}
+.password-input:focus { outline: none; border-color: var(--verde); }
+.password-error { display: none; color: var(--cobre); font-size: 12px; margin-bottom: 12px; }
+.btn-submit {
+  width: 100%; padding: 14px; background: var(--verde); color: white; border: none;
+  border-radius: 100px; font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: all .2s ease; box-shadow: 0 10px 24px -10px rgba(74,107,95,.7); margin-bottom: 10px;
+}
+.btn-submit:hover { background: var(--verde-2); transform: translateY(-1px); }
+.btn-secondary {
+  width: 100%; padding: 13px; background: transparent; color: var(--granito-2);
+  border: 1px solid var(--linea-2); border-radius: 100px; font-size: 13.5px; font-weight: 500;
+  cursor: pointer; transition: all .2s ease; font-family: 'Inter';
+}
+.btn-secondary:hover { border-color: var(--granito-2); }
+.link-recovery {
+  display: inline-block; margin-top: 18px; color: var(--cobre);
+  text-decoration: none; font-size: 13px; cursor: pointer;
+}
+.link-recovery:hover { opacity: .8; }
+.roles{display:grid;gap:12px}
+.role-btn{font-family:'Inter';font-size:15px;font-weight:400;padding:18px 20px;
+  background:var(--papel);border:1px solid var(--linea);border-radius:12px;cursor:pointer;
+  text-align:left;transition:all .15s;color:var(--granito);
+  display:flex;justify-content:space-between;align-items:center}
+.role-btn:hover{border-color:var(--cobre);transform:translateY(-1px)}
+.role-btn.selected{background:var(--verde-bg);border-color:var(--verde);color:var(--granito)}
+.role-btn.selected span{color:var(--verde)}
+.role-btn b{font-weight:500}
+.role-btn span{font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--granito-2)}
+
+/* password recovery */
+#password-recovery-gate{position:fixed;inset:0;background:var(--cal);z-index:100;
+  display:none;align-items:center;justify-content:center;padding:24px}
+.recovery-info{background:var(--amber-bg);border-left:4px solid var(--cobre);
+  padding:16px 18px;margin-bottom:24px;border-radius:3px;font-size:13px;line-height:1.6;color:var(--granito-2)}
+.recovery-code{background:var(--cal);border:2px solid var(--linea);padding:20px;
+  border-radius:6px;margin:20px 0;font-family:'JetBrains Mono',monospace;font-size:18px;
+  font-weight:600;letter-spacing:.15em;color:var(--cobre);text-align:center;word-break:break-all;user-select:all}
+.copy-btn{font-size:11px;padding:6px 12px;background:var(--cal);border:1px solid var(--linea);
+  border-radius:3px;cursor:pointer;margin-top:8px;transition:all .15s;font-family:'Inter';font-weight:500}
+.copy-btn:hover{background:var(--linea);border-color:var(--granito-2);color:var(--cobre)}
+.btn-recovery-back{font-size:13px;color:var(--cobre);cursor:pointer;margin-top:20px;text-decoration:underline}
+
+/* user menu */
+#user-menu{position:absolute;top:60px;right:22px;background:white;border:1px solid var(--linea);border-radius:3px;
+  box-shadow:0 4px 12px rgba(0,0,0,.1);z-index:50;min-width:200px;display:none}
+#user-menu.show{display:block}
+.menu-item{padding:10px 16px;border-bottom:1px solid var(--linea);cursor:pointer;font-size:13px;
+  color:var(--granito-2);transition:all .15s}
+.menu-item:last-child{border-bottom:none}
+.menu-item:hover{background:var(--cal);color:var(--cobre)}
+
+/* app */
+#app{display:none}
+header{background:white;border-bottom:1px solid var(--linea);padding:20px 22px;
+  position:sticky;top:0;z-index:40}
+.header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+header h1{font-family:'Fraunces',serif;font-weight:400;font-size:20px}
+.whoami{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--cobre);
+  text-transform:uppercase;letter-spacing:.1em;cursor:pointer;position:relative}
+.tabs{display:flex;gap:24px;border-top:1px solid var(--linea);margin-top:12px;padding-top:12px}
+.tab{padding:6px 0;font-size:13px;color:var(--granito-2);cursor:pointer;
+  text-transform:uppercase;letter-spacing:.05em;font-family:'Glacial Indifference',sans-serif;
+  border-bottom:2px solid transparent;transition:all .2s}
+.tab.on{color:var(--granito);border-bottom-color:var(--verde)}
+.tab:hover{color:var(--granito)}
+
+.app-inner{display:grid;grid-template-columns:1fr 280px;gap:20px}
+main{display:none;grid-column:1;grid-row:1}
+main.on{display:block}
+.sidebar{grid-column:2;grid-row:1;padding:0 22px}
+
+.section{margin-bottom:40px}
+.section h2{font-family:'Fraunces',serif;font-weight:400;font-size:21px;margin-bottom:12px}
+.section p{font-size:13px;color:var(--granito-2);line-height:1.6;margin-bottom:16px}
+
+.gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.thumb{position:relative;aspect-ratio:1;border-radius:4px;border:1px solid var(--linea);background:var(--cal-2);cursor:pointer}
+.thumb img,.thumb video{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .vico{position:absolute;bottom:4px;right:4px;background:rgba(46,49,52,.8);
+  color:#fff;font-size:9px;padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace}
+.thumb .by{position:absolute;top:0;left:0;right:0;font-size:8px;
+  font-family:'JetBrains Mono',monospace;background:linear-gradient(rgba(0,0,0,.5),transparent);
+  color:#fff;padding:3px 5px;text-transform:uppercase;letter-spacing:.05em}
+.add-media{width:78px;height:78px;border-radius:4px;border:1px dashed var(--cobre);
+  background:var(--papel);cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:4px;color:var(--cobre);font-size:11px}
+.add-media span{font-size:20px;line-height:1}
+.demo-tag{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--roble);
+  letter-spacing:.08em;text-transform:uppercase}
+
+/* budget */
+.bud-group{margin-bottom:26px}
+.bud-group h4{font-family:'Fraunces',serif;font-weight:400;font-size:17px;margin-bottom:12px}
+.bud-row{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;
+  padding:13px 16px;background:var(--papel);border:1px solid var(--linea);
+  border-radius:3px;margin-bottom:7px}
+.bud-row .bname{font-size:14px}
+.bud-row .bprice{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--granito-2)}
+.bud-status{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.08em;
+  text-transform:uppercase;padding:4px 9px;border-radius:20px}
+.bs-base{background:var(--cal);color:var(--granito-2);border:1px solid var(--linea)}
+.bs-pend{background:var(--amber-bg);color:var(--cobre)}
+.bs-yes{background:var(--verde-bg);color:var(--verde)}
+.bs-no{background:var(--cal);color:var(--granito-2);border:1px solid var(--linea);text-decoration:line-through}
+.opt-actions{display:flex;gap:6px}
+.bud-total{display:flex;justify-content:space-between;align-items:baseline;
+  padding:18px 16px;border-top:2px solid var(--granito);margin-top:8px}
+.bud-total .tl{font-family:'Fraunces',serif;font-size:19px}
+.bud-total .tv{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:500}
+
+/* chat */
+.chat-phase-sel{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:7px 13px;
+  border:1px solid var(--linea);border-radius:20px;background:var(--papel);cursor:pointer;color:var(--granito-2)}
+.chip.on{background:var(--cobre);color:#fff;border-color:var(--cobre)}
+.msgs{display:flex;flex-direction:column;gap:12px;margin-bottom:18px;min-height:120px}
+.msg{max-width:80%;padding:11px 15px;border-radius:12px;font-size:14px}
+.msg .who{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.08em;
+  text-transform:uppercase;margin-bottom:4px;opacity:.7}
+.msg.obra{align-self:flex-start;background:var(--papel);border:1px solid var(--linea);border-bottom-left-radius:3px}
+.msg.cliente{align-self:flex-end;background:var(--verde-bg);border-bottom-right-radius:3px}
+.msg .time{font-size:10px;color:var(--granito-2);margin-top:5px;font-family:'JetBrains Mono',monospace}
+.chat-empty{text-align:center;color:var(--granito-2);font-style:italic;font-size:14px;padding:30px}
+.chat-input{display:flex;gap:8px}
+.chat-input input{flex:1;padding:12px 14px;border:1px solid var(--linea);border-radius:3px;
+  font-family:'Inter';font-size:14px;background:var(--papel);color:var(--granito)}
+
+/* punch list */
+.punch{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;
+  background:var(--papel);border:1px solid var(--linea);border-radius:3px;margin-bottom:8px}
+.punch.done{opacity:.55}
+.punch-check{width:22px;height:22px;border:1.5px solid var(--cobre);border-radius:4px;
+  flex:0 0 auto;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:13px;margin-top:1px}
+.punch.done .punch-check{background:var(--verde);border-color:var(--verde)}
+.punch-txt{flex:1;font-size:14px}
+.punch.done .punch-txt{text-decoration:line-through;color:var(--granito-2)}
+.punch-meta{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--granito-2);
+  margin-top:4px;letter-spacing:.05em}
+.add-punch{display:flex;gap:8px;margin-top:14px}
+.add-punch input{flex:1;padding:11px 13px;border:1px solid var(--linea);border-radius:3px;
+  font-family:'Inter';font-size:14px;background:var(--papel);color:var(--granito)}
+
+/* calendar */
+.cal-phase{display:grid;grid-template-columns:1fr auto;gap:16px;padding:16px 18px;
+  background:var(--papel);border:1px solid var(--linea);border-radius:3px;margin-bottom:8px;
+  border-left:3px solid var(--linea)}
+.cal-phase.active{border-left-color:var(--cobre)}
+.cal-phase.done{border-left-color:var(--verde)}
+.cal-name{font-family:'Fraunces',serif;font-size:17px}
+.cal-when{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--granito-2);margin-top:3px}
+.cal-status{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.08em;
+  text-transform:uppercase;align-self:center;color:var(--granito-2)}
+
+.foot{padding:30px 0 20px;margin-top:20px;border-top:1px solid var(--linea);
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;
+  color:var(--granito-2);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.foot a{color:var(--cobre);cursor:pointer}
+.saving{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--granito-2)}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--granito);color:var(--cal);padding:13px 22px;border-radius:4px;
+  font-size:13px;opacity:0;transition:all .3s;z-index:90}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* lightbox */
+.lightbox{position:fixed;inset:0;background:rgba(46,49,52,.92);z-index:95;
+  display:none;align-items:center;justify-content:center;padding:24px}
+.lightbox.on{display:flex}
+.lightbox img,.lightbox video{max-width:90%;max-height:85vh;border-radius:4px}
+.lightbox .close{position:absolute;top:20px;right:24px;color:#fff;font-size:28px;cursor:pointer;
+  font-weight:300}
+
+.demo-banner{background:var(--amber-bg);border:1px solid var(--roble);border-radius:4px;
+  padding:12px 16px;font-size:12.5px;color:var(--cobre);margin-bottom:20px;line-height:1.5}
+
+@media(max-width:600px){
+  .app-inner{grid-template-columns:1fr;grid-template-rows:auto auto}
+  .sidebar{grid-column:1;grid-row:2;padding:0 22px}
+  .tabs{gap:12px}
+  .tab{font-size:11px}
+  .gallery{grid-template-columns:repeat(3,1fr)}
+}
+/* MUESTRARIO (galería proyecto terminado) */
+.muestrario-modal{
+  display:none;position:fixed;inset:0;z-index:2000;
+  background:rgba(46,49,52,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;
+}
+.muestrario-contenido{
+  background:var(--cal);border-radius:20px;max-width:920px;width:100%;
+  padding:32px;box-shadow:0 30px 70px -20px rgba(0,0,0,.5);
+}
+.muestrario-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:16px}
+.muestrario-eyebrow{
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--roble);margin-bottom:8px;
+}
+.muestrario-header h2{font-family:'Playfair Display',serif;font-weight:400;font-size:34px;color:var(--granito)}
+.muestrario-cerrar{
+  background:none;border:1px solid var(--linea);border-radius:50%;width:40px;height:40px;
+  font-size:16px;cursor:pointer;color:var(--granito-2);flex-shrink:0;transition:all .2s;
+}
+.muestrario-cerrar:hover{background:white;color:var(--granito)}
+.muestrario-drop{
+  border:2px dashed var(--linea);border-radius:12px;padding:26px;text-align:center;
+  color:var(--granito-2);cursor:pointer;margin-bottom:24px;font-size:14px;transition:all .2s;
+}
+.muestrario-drop:hover,.muestrario-drop.drag-activo{border-color:var(--verde);background:var(--verde-bg)}
+.muestrario-galeria{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;
+}
+.muestrario-item{position:relative;border-radius:12px;overflow:hidden;aspect-ratio:4/3;background:var(--papel)}
+.muestrario-item img{width:100%;height:100%;object-fit:cover;cursor:pointer;transition:transform .3s}
+.muestrario-item img:hover{transform:scale(1.05)}
+.muestrario-item .borrar-foto{
+  position:absolute;top:8px;right:8px;background:rgba(46,49,52,.75);color:white;border:none;
+  border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:13px;display:none;
+}
+.muestrario-item:hover .borrar-foto{display:block}
+.muestrario-vacio{text-align:center;color:var(--granito-2);font-style:italic;padding:40px;font-size:14px}
+/* Visor de foto individual */
+.foto-visor{
+  display:none;position:fixed;inset:0;z-index:2100;background:rgba(46,49,52,.9);
+  align-items:center;justify-content:center;padding:30px;cursor:zoom-out;
+}
+.foto-visor img{max-width:92vw;max-height:90vh;border-radius:10px;box-shadow:0 30px 70px -20px rgba(0,0,0,.7)}
+.foto-nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(255,255,255,.15);color:white;font-size:32px;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s ease;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+}
+.foto-nav:hover{background:rgba(255,255,255,.3)}
+.foto-nav-prev{left:24px}
+.foto-nav-next{right:24px}
+.foto-cerrar{
+  position:absolute;top:24px;right:24px;
+  width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(255,255,255,.15);color:white;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s ease;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+}
+.foto-cerrar:hover{background:rgba(255,255,255,.3)}
+@media(max-width:600px){
+  .foto-nav{width:44px;height:44px;font-size:26px}
+  .foto-nav-prev{left:10px}
+  .foto-nav-next{right:10px}
+}
+.marcador-casita{background:none;border:none;filter:drop-shadow(0 4px 6px rgba(46,49,52,.28))}
+.marcador-casita svg{display:block}
+</style>
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, onSnapshot }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+  const firebaseConfig = {
+    apiKey: "AIzaSyBtfugXk5ZsI5SZ8V-QyxWOzz7-5hFU8U8",
+    authDomain: "lafinurstudio.firebaseapp.com",
+    projectId: "lafinurstudio",
+    storageBucket: "lafinurstudio.firebasestorage.app",
+    messagingSenderId: "383108792937",
+    appId: "1:383108792937:web:6a6be95caa1171f968d8f8"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  window.FB = { ready: true, db, collection, doc, getDoc, getDocs, setDoc, deleteDoc, onSnapshot };
+  window.dispatchEvent(new Event('firebase-ready'));
+</script>
+</head>
+<body>
+
+<!-- MAPA DE OBRAS -->
+<div id="map-gate" style="display:none">
+  <div class="map-header">
+    <h1>Elige tu proyecto</h1>
+    <p>Selecciona una obra para continuar</p>
+  </div>
+  <div id="map-container">
+    <div id="leaflet-map"></div>
+  </div>
+  <div class="map-info">
+    Haz clic en un alfiler para seleccionar la obra
+  </div>
+</div>
+
+<!-- CONTRATO GATE -->
+<div id="contrato-gate" style="display:none">
+  <div class="contrato-container">
+    <div class="contrato-header">
+      <h1>Contrato de Obra</h1>
+      <p class="meta">Lafinur Studio · Remodelación Cocina y Lavadero</p>
+    </div>
+    <div class="contrato-content" id="contrato-scroll">
+      <p style="margin-bottom:16px"><strong>Asunto:</strong> Contrato de acuerdo sobre la prestación de servicios entre <strong>Lafinur Studio</strong> y <strong>Lorena Domb</strong>. Este contrato servirá para describir los términos bajo los cuales trabajaremos juntos, en los cuales se denominará a <strong>Lafinur Studio</strong> como "El Estudio" y a <strong>Lorena Domb</strong> como "El Cliente".</p>
+
+      <h2>1. Identificación del trabajo a realizar</h2>
+      <p><strong>Ubicación del proyecto:</strong> Palermo</p>
+      <p><strong>Descripción detallada:</strong> Remodelación integral de cocina con conservación de mesada de granito existente y remodelación total del lavadero. El proyecto incluye diseño de mobiliario personalizado para ambos espacios, selección de materiales, especificación de instalaciones y propuesta de equipamiento. Lafinur Studio realizará la supervisión general de todas las fases de ejecución, coordinando con proveedores, fabricantes y contratistas para asegurar que el proyecto se desarrolle conforme a los planos, especificaciones técnicas y cronograma acordado.</p>
+
+      <h2>2. Fases del proyecto</h2>
+      <ul>
+        <li><strong>Fase 1:</strong> Definiciones, Diseño y Presupuesto</li>
+        <li><strong>Fase 2:</strong> Fabricación</li>
+        <li><strong>Fase 3:</strong> Modificaciones e Instalaciones (Primera Semana de Obra)</li>
+        <li><strong>Fase 4:</strong> Terminar Superficies (Segunda Semana de Obra)</li>
+        <li><strong>Fase 5:</strong> Montar y Entregar (Tercera Semana de Obra)</li>
+      </ul>
+
+      <h2>3. Alcance del trabajo</h2>
+      <h3>Cocina</h3>
+      <ul>
+        <li>Muebles — Reemplazo completo de módulos existentes</li>
+        <li>Muebles adicionales — Diseño de nuevos muebles en paredes adyacentes</li>
+        <li>Mesada de granito — Desmontaje, acopio y remontaje (sujeto a verificación estructural)</li>
+        <li>Pintura completa del ambiente</li>
+        <li>Propuestas de iluminación (a confirmar)</li>
+        <li>Extractor/campana (a confirmar) • Grifería (a confirmar) • Pulido (a confirmar)</li>
+      </ul>
+      <h3>Lavadero</h3>
+      <ul>
+        <li>Remoción de muebles existentes</li>
+        <li>Diseño de muebles con módulo elevado para secarropas sobre lavarropas (con soporte estructural verificado)</li>
+        <li>Revestimientos + impermeabilización • Instalación eléctrica • Plomería</li>
+        <li>Iluminación • Ventilación • Pintura completa • Limpieza de obra</li>
+      </ul>
+      <h3>Entregables finales</h3>
+      <ul>
+        <li>Reuniones iniciales para diagnóstico e inspiración</li>
+        <li>Toma de medidas y recopilación de referencias</li>
+        <li>Creación de moodboard con estilo, paleta y materiales</li>
+        <li>Diseño de distribución y selección de materiales/equipamiento</li>
+        <li>Modelado 3D y renders realistas</li>
+        <li>Presentación final con planos, lista de compras y presupuesto detallado</li>
+      </ul>
+
+      <h2>4. Condicionantes técnicos</h2>
+      <h3>Mesada de granito</h3>
+      <p>La conservación de la mesada de granito puede sufrir daños en el desmontaje y montaje. Pueden ocasionarse fisuras si está muy adherida. En caso de daño, se informará con diagnóstico, cotización y plazo para su reparación, siendo el cliente quien decide continuar la obra o no.</p>
+      <h3>Módulo de secarropas</h3>
+      <p>Se verificará la capacidad portante de la pared. Los herrajes serán dimensionados para el peso cargado. Se garantizará altura operativa sin necesidad de escalera y espacio para venteo según el tipo de equipo. Será necesario confirmar marca, modelo, peso y medidas del lavarropas y secarropas antes de encargar el módulo.</p>
+      <h3>Patologías y vicios ocultos</h3>
+      <p>No se incluyen en la base del presupuesto. Si durante la obra se detectan filtraciones, cañerías en mal estado, problemas eléctricos, humedad u otros problemas ocultos, se informará al cliente con diagnóstico, cotización y plazo. La incorporación de la reparación requiere aprobación escrita del cliente.</p>
+
+      <h2>5. Honorarios y presupuestos</h2>
+      <p>Los honorarios de El Estudio se dividen en dos conceptos independientes: <strong>(A) Honorario de Diseño</strong> y <strong>(B) Honorario de Dirección y Supervisión de Obra</strong>. La Fabricación de muebles e instalaciones son costos adicionales.</p>
+      <h3>A. Honorario de Diseño (Fase 1) — monto fijo</h3>
+      <p>Comprende relevamiento, diseño de distribución, selección de materiales, modelado 3D y renders, planos técnicos, lista de compras y presupuesto detallado de compras.</p>
+      <p>Este honorario es un <strong>monto fijo de USD 2.000</strong>, independiente del valor final de la obra, y se abona así:</p>
+      <ul>
+        <li><strong>50% de anticipo a la firma del presente contrato.</strong></li>
+        <li><strong>50% restante contra entrega</strong> de los entregables de diseño (planos, renders, especificaciones y presupuesto detallado).</li>
+      </ul>
+      <p>El Honorario de Diseño se abona en su totalidad aunque El Cliente decida no avanzar con la fabricación o la obra.</p>
+      <h3>B. Honorario de Dirección y Supervisión de Obra</h3>
+      <p>Comprende la coordinación de proveedores y contratistas, control de ejecución conforme a planos y cronograma, y supervisión general durante las Fases 3, 4 y 5. Corresponde al <strong>12% del presupuesto de obra aprobado por El Cliente</strong> al cierre de la Fase 1.</p>
+      <p>Se abona: <strong>50% al inicio de la obra</strong> (antes de la Fase 3) y <strong>50% a la entrega final.</strong> Si el presupuesto de obra se actualiza por cambios de alcance aprobados por El Cliente, el honorario se recalcula sobre el nuevo monto.</p>
+      <h3>C. Fabricación de muebles</h3>
+      <p>Se abona directamente al proveedor: anticipo del 50-70% y saldo restante antes de terminar la obra, según el proveedor elegido.</p>
+      <h3>D. Instalaciones</h3>
+      <p>Corresponde al presupuesto de mano de obra según los m² de cocina y lavadero a intervenir, más materiales constructivos. Se coordina directamente con el constructor/proveedor elegido.</p>
+
+      <h2>6. Métodos de pago</h2>
+      <p><strong>El pago de cada etapa se puede realizar en:</strong></p>
+      <ul>
+        <li>Efectivo</li>
+        <li>Transferencia bancaria</li>
+        <li>Pesos argentinos o dólares (al tipo de cambio cotización "venta" del día según Dólar Banco Nación)</li>
+      </ul>
+      <h3>Referencia cambiaria y actualización</h3>
+      <p>Todos los montos de honorarios se expresan en dólares estadounidenses (USD). Los pagos en pesos se convierten al tipo de cambio "venta" del Dólar Banco Nación <strong>del día efectivo del pago</strong>. Cada cuota o etapa mantiene su valor en USD hasta su cancelación.</p>
+      <h3>Coordinación de pagos</h3>
+      <p>El estudio coordinará los pagos a los fabricantes, proveedores y contratistas según acuerdo entre las partes.</p>
+
+      <h2>7. Garantía y responsabilidad</h2>
+      <p>El estudio se compromete a entregar un trabajo de calidad profesional. Sin embargo, el estudio no se hace responsable por:</p>
+      <ul>
+        <li>Cambios de mercado o disponibilidad de productos después de 30 días de la entrega</li>
+        <li>Variaciones de color en renders respecto a la realidad una vez aplicados los materiales</li>
+        <li>Imprevistos estructurales o defectos ocultos en la propiedad descubiertos durante la obra</li>
+        <li>Decisiones del cliente que afecten el proyecto fuera del acuerdo inicial</li>
+        <li>Defectos de fábrica en artefactos como herrajes, griferías, entre otros. La garantía de estos elementos es responsabilidad del fabricante/proveedor</li>
+        <li>Tiempo y demora de los proveedores fabricantes o contratistas</li>
+      </ul>
+
+      <h2>8. Cancelación anticipada del contrato</h2>
+      <h3>Por parte del cliente</h3>
+      <ul>
+        <li><strong>Fase 1:</strong> El anticipo del 50% del Honorario de Diseño no es reintegrable.</li>
+        <li><strong>Fase 2:</strong> Se deberá abonar la totalidad del presupuesto al proveedor fabricante de muebles, ya que los pedidos han sido encargados y se encuentran en proceso de fabricación o ya han sido completados.</li>
+        <li><strong>Fase 3, 4 o 5:</strong> Se abona el 50% del Honorario de Dirección ya facturado al inicio de obra, más los días de trabajo efectivamente realizados y los compromisos ya asumidos con proveedores y contratistas según el avance.</li>
+      </ul>
+
+      <h2>9. Comunicación y reportes</h2>
+      <p>Se mantiene comunicación fluida con el cliente durante todas las fases del proyecto. Se notifica con anticipación cualquier cambio, imprevisto o decisión que requiera aprobación. Los avances de obra serán actualizados continuamente en la plataforma de Lafinur Studio, donde el cliente tendrá acceso a reportes de avance, fotografías del proyecto, cronograma actualizado y podrá realizar seguimiento en tiempo real de todas las etapas.</p>
+      <p>Se proporcionan reportes periódicos según sea necesario, y se atienden consultas y coordinaciones de manera ágil. La plataforma de Lafinur Studio es el canal principal de comunicación para mantener transparencia y facilitar la toma de decisiones conjuntas.</p>
+
+      <h2>10. Duración y experiencia de la obra</h2>
+      <h3>Cronograma de ejecución</h3>
+      <ul>
+        <li><strong>Mes 1:</strong> Diseño y presupuesto (sin obra en casa)</li>
+        <li><strong>Mes 1-2:</strong> Fabricación de muebles (sin obra en casa)</li>
+        <li><strong>Semana 1 de obra:</strong> Modificaciones, desmontaje e instalaciones</li>
+        <li><strong>Semana 2 de obra:</strong> Revestimientos, impermeabilización</li>
+        <li><strong>Semana 3 de obra:</strong> Montaje de muebles, pulido, pintura y detalles finales.</li>
+      </ul>
+      <p><strong>Sin cocina operativa:</strong> Aproximadamente 3 semanas durante la ejecución.</p>
+      <p><strong>Sin lavarropas ni secarropas disponibles:</strong> Aproximadamente 2 semanas y media durante la fase de instalación y montaje del módulo elevado. Se coordina con el cliente una solución provisoria si es necesario.</p>
+      <p><strong>Minimización de disrupciones:</strong> El proyecto se divide en fases específicas para minimizar disrupciones en el hogar. No hay presencia de contratistas entre fases, permitiendo que el cliente disfrute de períodos sin obra.</p>
+    </div>
+        <div class="contrato-footer">
+      <div class="checkbox-group">
+        <input type="checkbox" id="checkReadContract">
+        <label for="checkReadContract">He leído y acepto los términos y condiciones del contrato</label>
+      </div>
+      <div class="contrato-actions">
+        <button class="btn-accept" id="btnClienteAcepta" onclick="aceptarContratoCliente()">Acepto el contrato (Cliente)</button>
+        <button class="btn-accept" id="btnEstudioAcepta" disabled style="display:none" onclick="aceptarContratoEstudio()">Acepto el contrato (Estudio)</button>
+        <button class="btn-accept" id="btnVolverContrato" style="display:none;background:#D6D0C4;color:#2E3134" onclick="volverDesdeContrato()">Volver</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PASSWORD GATE -->
+<div id="password-gate" style="display:none">
+  <div class="password-card">
+    <div class="pw-eyebrow">Acceso protegido</div>
+    <h1 id="pass-obra-name">Scalabrini Ortiz</h1>
+    <p>Ingresá tu contraseña para acceder</p>
+    <form onsubmit="verifyPassword(event)">
+      <input type="password" id="pass-input" class="password-input" placeholder="Contraseña" autofocus>
+      <div id="pass-error" class="password-error"></div>
+      <button type="submit" class="btn-submit">Acceder</button>
+      <button type="button" class="btn-secondary" onclick="backToObras()">Volver</button>
+    </form>
+    <a class="link-recovery" onclick="goToRecovery()">¿Olvidaste la contraseña?</a>
+  </div>
+</div>
+
+<!-- PASSWORD RECOVERY -->
+<div id="password-recovery-gate" style="display:none">
+  <div class="password-card">
+    <div class="pw-eyebrow">Recuperación de contraseña</div>
+    <h1 id="recovery-obra-name">Scalabrini Ortiz</h1>
+    <p style="font-size:14.5px;color:var(--granito-2);line-height:1.7;margin-bottom:8px">Para recuperar tu contraseña, comunicate con el estudio y te enviaremos una nueva.</p>
+    <p style="font-size:14px;color:var(--granito);margin-bottom:26px">Escribinos a<br><a href="mailto:ami@lafinurstudio.com" style="color:var(--verde);font-weight:600;text-decoration:none">ami@lafinurstudio.com</a></p>
+    <button type="button" class="btn-secondary" onclick="backToPasswordScreen()">Volver</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <header>
+    <div class="header-top">
+      <h1 id="obra-title">Scalabrini Ortiz · v1.3</h1>
+      <div class="whoami" id="whoami" onclick="toggleUserMenu()">Cliente · cambiar rol</div>
+      <div id="user-menu">
+        <div class="menu-item" onclick="switchRole()">Cambiar rol</div>
+        <div class="menu-item" onclick="openChangePassword()">Cambiar contraseña</div>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab on" onclick="switchTab('media')">Fotos</div>
+      <div class="tab" onclick="switchTab('presupuesto')">Presupuesto</div>
+      <div class="tab" onclick="switchTab('chat')">Mensajes</div>
+      <div class="tab" onclick="switchTab('checklist')">Tareas</div>
+      <div class="tab" onclick="switchTab('timeline')">Cronograma</div>
+    </div>
+  </header>
+
+  <div class="app-inner">
+    <!-- FOTOS -->
+    <main class="on">
+      <div class="wrap">
+        <div id="demo-banner-container"></div>
+        <div class="section">
+          <h2>Reportes Fotográficos</h2>
+          <p>Seguimiento visual del avance de la obra</p>
+          <div class="gallery" id="media-list"></div>
+        </div>
+        <div class="section">
+          <h2>Fases del Proyecto</h2>
+          <div id="phases-list"></div>
+        </div>
+        <div class="foot"><div id="saving"></div></div>
+      </div>
+    </main>
+
+    <!-- PRESUPUESTO -->
+    <main>
+      <div class="wrap">
+        <div class="section">
+          <h2>Presupuesto Detallado</h2>
+          <p>Desglose completo de costos del proyecto</p>
+          <div id="budget-list"></div>
+        </div>
+        <div class="foot"><div id="saving"></div></div>
+      </div>
+    </main>
+
+    <!-- MENSAJES -->
+    <main>
+      <div class="wrap">
+        <div class="section">
+          <h2>Comunicación Directa</h2>
+          <p>Conversación con el equipo de Lafinur Studio</p>
+          <div class="chat-phase-sel" id="chat-phase-filter"></div>
+          <div class="msgs" id="chat-msgs"></div>
+          <div class="chat-input">
+            <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." onkeypress="if(event.key==='Enter'){addChatMsg();event.preventDefault()}">
+            <button onclick="addChatMsg()" style="padding:12px 14px;background:var(--verde);color:white;border:none;border-radius:3px;cursor:pointer;font-weight:500">Enviar</button>
+          </div>
+        </div>
+        <div class="foot"><div id="saving"></div></div>
+      </div>
+    </main>
+
+    <!-- CHECKLIST -->
+    <main>
+      <div class="wrap">
+        <div class="section">
+          <h2>Lista de Verificación</h2>
+          <p>Tareas pendientes de la obra</p>
+          <div id="punch-list"></div>
+          <div class="add-punch">
+            <input type="text" id="punch-input" placeholder="Agregar nueva tarea...">
+            <button onclick="addPunch()" style="padding:12px 14px;background:var(--verde);color:white;border:none;border-radius:3px;cursor:pointer;font-weight:500">Agregar</button>
+          </div>
+        </div>
+        <div class="foot"><div id="saving"></div></div>
+      </div>
+    </main>
+
+    <!-- TIMELINE -->
+    <main>
+      <div class="wrap">
+        <div class="section">
+          <h2>Cronograma de Obra</h2>
+          <p>Fases y plazos del proyecto</p>
+          <div id="calendar-list"></div>
+        </div>
+        <div class="foot"><div id="saving"></div></div>
+      </div>
+    </main>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="section" style="margin-top:20px">
+        <h2 style="font-size:16px">Información</h2>
+        <p style="font-size:12px">
+          <span style="display:block;margin-bottom:8px"><b>Estado:</b> En progreso</span>
+          <span style="display:block;margin-bottom:8px"><b>Rol:</b> <span id="sidebar-role">Cliente</span></span>
+          <span style="display:block"><b>Versión:</b> 1.3</span>
+        </p>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <div class="close" onclick="closeLightbox()">×</div>
+  <img id="lightbox-img" style="display:none">
+  <video id="lightbox-video" style="display:none" controls></video>
+</div>
+
+<!-- MODAL CAMBIAR CONTRASEÑA -->
+<div id="change-password-modal" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;
+  display:none;align-items:center;justify-content:center">
+  <div style="background:white;padding:30px;border-radius:8px;max-width:400px;width:100%">
+    <h2 style="font-family:'Fraunces',serif;font-size:20px;margin-bottom:20px">Cambiar Contraseña</h2>
+    <div style="margin-bottom:16px">
+      <label style="display:block;font-size:13px;margin-bottom:6px">Contraseña actual</label>
+      <input type="password" id="current-pass" style="width:100%;padding:10px 12px;border:1px solid var(--linea);border-radius:4px;font-size:13px">
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="display:block;font-size:13px;margin-bottom:6px">Nueva contraseña</label>
+      <input type="password" id="new-pass" style="width:100%;padding:10px 12px;border:1px solid var(--linea);border-radius:4px;font-size:13px">
+    </div>
+    <div style="margin-bottom:20px">
+      <label style="display:block;font-size:13px;margin-bottom:6px">Confirmar nueva contraseña</label>
+      <input type="password" id="confirm-pass" style="width:100%;padding:10px 12px;border:1px solid var(--linea);border-radius:4px;font-size:13px">
+    </div>
+    <div id="pass-change-error" style="display:none;color:var(--cobre);font-size:12px;margin-bottom:16px"></div>
+    <div style="display:flex;gap:10px">
+      <button onclick="saveNewPassword()" style="flex:1;padding:10px;background:var(--verde);color:white;border:none;border-radius:4px;cursor:pointer;font-weight:500">Guardar</button>
+      <button onclick="closeChangePassword()" style="flex:1;padding:10px;background:var(--cal);border:1px solid var(--linea);border-radius:4px;cursor:pointer;font-weight:500">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+const WORKS={scalabrini:'Scalabrini Ortiz',malvinas:'Malvinas Argentinas',voltaire:'Voltaire',pilar:'Pilar',ciudadpaz:'Lafinur',siria:'Rep. Árabe Siria',santafe:'Sta. Fe',cordoba:'Córdoba 1144'};
+const PASSWORDS={scalabrini:'3570',malvinas:'SDLG',voltaire:'5970',pilar:'PILAR',ciudadpaz:'CDP',siria:'SIRIA',santafe:'STAFE',cordoba:'CBA1144'};
+
+// Coordenadas de las obras en Buenos Aires
+const OBRA_COORDS={
+  scalabrini:{lat:-34.5760565,lng:-58.4075367,address:'',state:'En curso'},
+  malvinas:{lat:-34.4560,lng:-58.6980,address:'',state:'En curso'},
+  voltaire:{lat:-34.5750,lng:-58.4450,address:'Voltaire, Palermo',state:'En curso'},
+  pilar:{lat:-34.4594,lng:-58.9265,address:'Pilar, Buenos Aires',state:'En curso'},
+  ciudadpaz:{lat:-34.580069,lng:-58.4142922,address:'',state:'Terminado'},
+  siria:{lat:-34.5799904,lng:-58.4130936,address:'',state:'Terminado'},
+  santafe:{lat:-34.5863027,lng:-58.4146750,address:'',state:'Terminado'},
+  cordoba:{lat:-33.2336564,lng:-60.3346677,address:'',state:'Terminado'}
+};
+
+let map=null;
+let role=null;
+let currentObra=null;
+
+function initMap(){
+  if(map){
+    map.invalidateSize();
+    return;
+  }
+  
+  try{
+    // Centro en Buenos Aires
+    map=L.map('leaflet-map',{zoomControl:true}).setView([-34.6037,-58.3816],11);
+    
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+      attribution:'© CartoDB, © OpenStreetMap contributors',maxZoom:19
+    }).addTo(map);
+    
+    // Agregar marcadores para cada obra
+    const puntos=[];
+    Object.entries(OBRA_COORDS).forEach(([key,data])=>{
+      puntos.push([data.lat,data.lng]);
+      // Determinar color según estado (paleta azul-verde)
+      let markerColor='#4A6B5F'; // Salvia (En curso)
+      let stateLabel=data.state;
+      let stateColor='#4A6B5F';
+      let isSelectable=true;
+      let stateMessage='';
+      
+      if(data.state==='Terminado'){
+        markerColor='#2C6E7F'; // Teal / azul verdoso
+        stateColor='#2C6E7F';
+        isSelectable=false;
+        stateMessage='Obra completada';
+      }else if(data.state==='Solicitado'){
+        markerColor='#3A5A78'; // Azul profundo
+        stateColor='#3A5A78';
+        isSelectable=false;
+        stateMessage='En solicitud';
+      }
+      
+      const gradId = 'g_' + key;
+      const iconoCasita = L.divIcon({
+        className: 'marcador-casita',
+        html: `<svg width="38" height="46" viewBox="0 0 38 46" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="${markerColor}" stop-opacity="1"/>
+              <stop offset="1" stop-color="${markerColor}" stop-opacity="0.82"/>
+            </linearGradient>
+          </defs>
+          <path d="M19 45 C19 45 5 30 5 17 A14 14 0 0 1 33 17 C33 30 19 45 19 45 Z" fill="url(#${gradId})" stroke="white" stroke-width="2.5"/>
+          <g fill="white">
+            <path d="M19 9.5 C18.5 9.5 18 9.7 17.6 10 L11.4 15 C11 15.3 10.8 15.8 10.8 16.3 L10.8 22.5 C10.8 23.2 11.4 23.8 12.1 23.8 L25.9 23.8 C26.6 23.8 27.2 23.2 27.2 22.5 L27.2 16.3 C27.2 15.8 27 15.3 26.6 15 L20.4 10 C20 9.7 19.5 9.5 19 9.5 Z"/>
+          </g>
+          <rect x="16.6" y="17.5" width="4.8" height="6.3" rx="1.2" fill="${markerColor}"/>
+        </svg>`,
+        iconSize: [38, 46],
+        iconAnchor: [19, 45],
+        popupAnchor: [0, -42]
+      });
+      const marker=L.marker([data.lat,data.lng],{icon:iconoCasita}).addTo(map);
+      
+      const botones=()=>{
+        if(key==='scalabrini' && data.state==='Solicitado'){
+          return '<button class="popup-select-btn" onclick="selectObraFromMap(\'scalabrini\')">Entrar</button>';
+        }else if(data.state==='Terminado'){
+          return '<button class="popup-select-btn" onclick="abrirMuestrario(\''+key+'\')">Ver galería</button>';
+        }else if(isSelectable){
+          return '<button class="popup-select-btn" onclick="selectObraFromMap(\''+key+'\')">Seleccionar</button>';
+        }else{
+          return '<div style="font-size:12px;color:#5A5F64;font-style:italic">'+stateMessage+'</div>';
+        }
+      };
+      
+      const popupContent=`
+        <div class="popup-title">${WORKS[key]}</div>
+        ${data.address ? `<div class="popup-address">${data.address}</div>` : ''}
+        <div style="font-size:11px;color:${stateColor};margin:8px 0;font-weight:500;text-transform:uppercase;letter-spacing:0.05em">${stateLabel}</div>
+        ${botones()}
+      `;
+      marker.bindPopup(popupContent);
+      marker.on('click',function(){this.openPopup();});
+    });
+    
+    // Ajustar la vista para que todos los proyectos sean visibles
+    if(puntos.length){
+      map.fitBounds(puntos,{padding:[50,50],maxZoom:12});
+    }
+    
+    setTimeout(()=>{if(map)map.invalidateSize();},100);
+  }catch(e){
+    console.error('Error inicializando mapa:',e);
+  }
+}
+
+/* ============================================================
+   MUESTRARIO DE PROYECTO TERMINADO (galería, acceso libre)
+   Fotos guardadas en Firestore: proyectos/{obra}/muestrario
+   Solo el estudio (accesoEstudio) puede subir/borrar.
+   ============================================================ */
+let muestrarioObra = null;
+// Capturar si es estudio ANTES de que otro código borre el flag al cargar
+const _esEstudioInicial = localStorage.getItem('accesoEstudio') === 'true';
+const ES_ESTUDIO_MUESTRARIO = () => _esEstudioInicial || localStorage.getItem('accesoEstudio') === 'true';
+
+function abrirMuestrario(obra){
+  muestrarioObra = obra;
+  document.getElementById('muestrario-titulo').textContent = WORKS[obra] || obra;
+  document.getElementById('muestrario-modal').style.display = 'flex';
+  // Mostrar zona de subida solo al estudio
+  document.getElementById('muestrario-upload').style.display = ES_ESTUDIO_MUESTRARIO() ? 'block' : 'none';
+  cargarMuestrario();
+}
+function cerrarMuestrario(){
+  document.getElementById('muestrario-modal').style.display = 'none';
+  muestrarioObra = null;
+}
+
+function colMuestrario(obra){
+  const { db, collection } = window.FB;
+  return collection(db, 'proyectos', obra, 'muestrario');
+}
+async function cargarMuestrario(){
+  const galeria = document.getElementById('muestrario-galeria');
+  const vacio = document.getElementById('muestrario-vacio');
+  galeria.innerHTML = '';
+  if(!window.FB || !window.FB.ready){
+    vacio.style.display = 'block';
+    vacio.textContent = 'No se pudo conectar con el muestrario.';
+    return;
+  }
+  try{
+    const snap = await window.FB.getDocs(colMuestrario(muestrarioObra));
+    const fotos = [];
+    snap.forEach(d => fotos.push({ id: d.id, ...d.data() }));
+    if(fotos.length === 0){ vacio.style.display = 'block'; vacio.textContent = 'Todavía no hay fotos en esta galería.'; return; }
+    vacio.style.display = 'none';
+    fotosGaleria = fotos.map(f => f.img);
+    galeria.innerHTML = fotos.map((f, idx) => `
+      <div class="muestrario-item">
+        <img src="${f.img}" alt="foto" onclick="verFotoGrande(${idx})">
+        ${ES_ESTUDIO_MUESTRARIO() ? `<button class="borrar-foto" onclick="borrarFotoMuestrario('${f.id}')">✕</button>` : ''}
+      </div>
+    `).join('');
+  }catch(e){
+    vacio.style.display = 'block';
+    vacio.textContent = 'No se pudieron cargar las fotos.';
+    console.warn('Muestrario:', e);
+  }
+}
+let fotosGaleria = [];
+let fotoActual = 0;
+
+function verFotoGrande(idx){
+  if(!fotosGaleria.length) return;
+  fotoActual = idx;
+  document.getElementById('foto-visor-img').src = fotosGaleria[fotoActual];
+  document.getElementById('foto-visor').style.display = 'flex';
+  actualizarFlechas();
+}
+function fotoSiguiente(e){
+  if(e) e.stopPropagation();
+  if(!fotosGaleria.length) return;
+  fotoActual = (fotoActual + 1) % fotosGaleria.length; // bucle
+  document.getElementById('foto-visor-img').src = fotosGaleria[fotoActual];
+}
+function fotoAnterior(e){
+  if(e) e.stopPropagation();
+  if(!fotosGaleria.length) return;
+  fotoActual = (fotoActual - 1 + fotosGaleria.length) % fotosGaleria.length; // bucle
+  document.getElementById('foto-visor-img').src = fotosGaleria[fotoActual];
+}
+function cerrarFotoVisor(){
+  document.getElementById('foto-visor').style.display = 'none';
+}
+function actualizarFlechas(){
+  // Ocultar las flechas si hay una sola foto
+  const mostrar = fotosGaleria.length > 1 ? 'flex' : 'none';
+  const prev = document.getElementById('foto-prev');
+  const next = document.getElementById('foto-next');
+  if(prev) prev.style.display = mostrar;
+  if(next) next.style.display = mostrar;
+}
+// Navegación con teclado
+document.addEventListener('keydown', function(e){
+  const visor = document.getElementById('foto-visor');
+  if(!visor || getComputedStyle(visor).display === 'none') return;
+  if(e.key === 'ArrowRight') fotoSiguiente();
+  else if(e.key === 'ArrowLeft') fotoAnterior();
+  else if(e.key === 'Escape') cerrarFotoVisor();
+});
+async function subirFotosMuestrario(event){
+  if(!ES_ESTUDIO_MUESTRARIO()) return; // solo el estudio puede subir
+  const files = event.target ? event.target.files : event;
+  if(!files || !files.length) return;
+  if(!window.FB || !window.FB.ready){ alert('No hay conexión con la nube.'); return; }
+  for(const file of files){
+    if(!file.type.startsWith('image/')) continue;
+    await new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = async () => {
+          // Comprimir para que entre en Firestore (~1MB por doc)
+          const MAX = 1000;
+          let w = img.width, h = img.height;
+          if(w > h && w > MAX){ h = Math.round(h*MAX/w); w = MAX; }
+          else if(h > MAX){ w = Math.round(w*MAX/h); h = MAX; }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+          try{
+            const { doc, setDoc } = window.FB;
+            const id = 'foto_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+            await setDoc(doc(colMuestrario(muestrarioObra), id), { img: dataUrl, fecha: new Date().toISOString() });
+          }catch(err){ alert('No se pudo subir una foto (puede ser muy pesada).'); }
+          resolve();
+        };
+        img.onerror = resolve;
+        img.src = e.target.result;
+      };
+      reader.onerror = resolve;
+      reader.readAsDataURL(file);
+    });
+  }
+  document.getElementById('muestrario-file').value = '';
+  cargarMuestrario();
+}
+async function borrarFotoMuestrario(id){
+  if(!ES_ESTUDIO_MUESTRARIO()) return; // solo el estudio puede eliminar
+  if(!confirm('¿Eliminar esta foto de la galería?')) return;
+  try{
+    const { doc, deleteDoc } = window.FB;
+    await deleteDoc(doc(colMuestrario(muestrarioObra), id));
+    cargarMuestrario();
+  }catch(e){ console.warn('Borrar foto:', e); }
+}
+// Drag & drop en la zona de subida del muestrario
+document.addEventListener('DOMContentLoaded', function(){
+  cargarPasswordsPersonalizadas();
+});
+
+document.addEventListener('DOMContentLoaded', function(){
+  const drop = document.getElementById('muestrario-drop');
+  if(!drop) return;
+  ['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); drop.classList.add('drag-activo'); }));
+  ['dragleave','dragend','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); drop.classList.remove('drag-activo'); }));
+  drop.addEventListener('drop', e => { const f = e.dataTransfer && e.dataTransfer.files; if(f && f.length) subirFotosMuestrario(f); });
+
+  // Si viene de Servicios Profesionales con la orden de abrir un muestrario
+  const abrirMost = localStorage.getItem('abrirMuestrario');
+  if(abrirMost && WORKS[abrirMost]){
+    localStorage.removeItem('abrirMuestrario');
+    setTimeout(() => abrirMuestrario(abrirMost), 600);
+  }
+});
+
+function selectObraFromMap(obra){
+  currentObra=obra;
+  document.getElementById('map-gate').style.display='none';
+  document.getElementById('password-gate').style.display='flex';
+  document.getElementById('pass-obra-name').textContent=WORKS[obra];
+  document.getElementById('pass-input').value='';
+  document.getElementById('pass-error').style.display='none';
+  document.getElementById('pass-input').focus();
+}
+
+function irAContratoScalabrini(){
+  // Compatibilidad: redirige al flujo de contraseña de la obra
+  selectObraFromMap('scalabrini');
+}
+
+function checkContrato(){
+  const esCliente=localStorage.getItem('role')==='cliente';
+  const esProveedores=localStorage.getItem('accesoProveedores')==='true';
+  const accesoEstudio=localStorage.getItem('accesoEstudio')==='true';
+  
+  // Asegurar que el botón Volver esté oculto por defecto
+  document.getElementById('btnVolverContrato').style.display='none';
+  
+  // Si es cliente, mostrar SIEMPRE el mapa (punto de entrada)
+  if(esCliente){
+    document.getElementById('contrato-gate').style.display='none';
+    document.getElementById('map-gate').style.display='flex';
+    role='cliente';
+    setTimeout(initMap,100);
+    return;
+  }
+  
+  // Limpiar flag de estudio si quedó de una visita a Servicios Profesionales
+  if(accesoEstudio){
+    localStorage.removeItem('accesoEstudio');
+  }
+  
+  // Por defecto: mostrar mapa
+  document.getElementById('contrato-gate').style.display='none';
+  document.getElementById('map-gate').style.display='flex';
+  setTimeout(initMap,100);
+}
+
+function aceptarContratoCliente(){
+  // Si hay una obra seleccionada (viene desde password-gate después de contraseña)
+  if(currentObra){
+    // Guardar que aceptó el contrato para esta obra específica
+    const contratoKey=`contrato_${currentObra}_aceptado_cliente`;
+    localStorage.setItem(contratoKey,'true');
+    
+    // Ir directo a la app
+    abrirAppDespuesContrato();
+  }else{
+    // Flujo inicial: aceptar contrato general del sitio y ir a mapa de obras
+    localStorage.setItem('contrato_lorena_scalabrini_aceptado','true');
+    document.getElementById('contrato-gate').style.display='none';
+    document.getElementById('map-gate').style.display='flex';
+    setTimeout(initMap,100);
+  }
+}
+
+function aceptarContratoEstudio(){
+  // El estudio acepta el contrato (desde proveedores)
+  localStorage.setItem('contrato_estudio_aceptado','true');
+  localStorage.removeItem('accesoProveedores');
+  showToast('✓ Contrato firmado por Estudio');
+  // Cerrar modal y volver al mapa
+  document.getElementById('contrato-gate').style.display='none';
+  document.getElementById('map-gate').style.display='flex';
+  setTimeout(initMap,100);
+}
+
+function backToObras(){
+  currentObra=null;
+  document.getElementById('password-gate').style.display='none';
+  document.getElementById('map-gate').style.display='flex';
+}
+
+function switchRole(){
+  currentObra=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('password-gate').style.display='none';
+  document.getElementById('map-gate').style.display='flex';
+  role=null;
+  setTimeout(initMap,100);
+}
+
+function verifyPassword(e){
+  e.preventDefault();
+  const pass=document.getElementById('pass-input').value;
+  if(pass===getPassword(currentObra)){
+    document.getElementById('password-gate').style.display='none';
+    
+    // Verificar si la obra está en estado "Solicitado"
+    const obraData=OBRA_COORDS[currentObra];
+    if(obraData && obraData.state==='Solicitado'){
+      // Mostrar contrato si aún no fue aceptado para esta obra
+      const contratoKeyCliente=`contrato_${currentObra}_aceptado_cliente`;
+      const contratoAceptadoCliente=localStorage.getItem(contratoKeyCliente)==='true';
+      
+      if(!contratoAceptadoCliente){
+        // Mostrar contrato
+        document.getElementById('contrato-gate').style.display='flex';
+        // Mostrar botón Volver
+        document.getElementById('btnVolverContrato').style.display='block';
+        
+        // Por defecto mostrar botón Cliente
+        document.getElementById('btnClienteAcepta').style.display='block';
+        document.getElementById('btnEstudioAcepta').style.display='none';
+      }else{
+        // Si ya aceptó el contrato, ir directo a la app
+        abrirAppDespuesContrato();
+      }
+    }else{
+      // Si no está en estado Solicitado, abrir app directamente
+      abrirAppDespuesContrato();
+    }
+  }else{
+    document.getElementById('pass-error').style.display='block';
+    document.getElementById('pass-error').textContent='Contraseña incorrecta';
+    document.getElementById('pass-input').value='';
+    document.getElementById('pass-input').focus();
+  }
+}
+
+function abrirAppDespuesContrato(){
+  // Asegurar acceso al panel: registrar contrato aceptado y obra actual
+  localStorage.setItem(`contrato_${currentObra}_aceptado_cliente`,'true');
+  localStorage.setItem('obraActual',currentObra);
+  // Abrir el panel de avances de la obra correspondiente
+  window.location.href='panel-avances.html?obra='+encodeURIComponent(currentObra);
+}
+
+function volverDesdeContrato(){
+  document.getElementById('contrato-gate').style.display='none';
+  document.getElementById('password-gate').style.display='flex';
+  document.getElementById('pass-input').focus();
+}
+
+function goToRecovery(){
+  document.getElementById('password-gate').style.display='none';
+  document.getElementById('password-recovery-gate').style.display='flex';
+  document.getElementById('recovery-obra-name').textContent=WORKS[currentObra];
+}
+
+function backToPasswordScreen(){
+  document.getElementById('password-recovery-gate').style.display='none';
+  document.getElementById('password-gate').style.display='flex';
+  document.getElementById('pass-input').focus();
+}
+
+
+// Caché local de contraseñas personalizadas (se llena desde Firebase al inicio)
+let passwordsPersonalizadas = {};
+
+function getPassword(obra){
+  // Prioridad: Firebase (caché) > localStorage > genérica del código
+  if(passwordsPersonalizadas[obra]) return passwordsPersonalizadas[obra];
+  const stored=localStorage.getItem(`pass_${obra}`);
+  return stored||PASSWORDS[obra];
+}
+
+async function setPassword(obra,newPass){
+  passwordsPersonalizadas[obra] = newPass;
+  localStorage.setItem(`pass_${obra}`,newPass);
+  // Guardar en Firebase para que persista entre dispositivos
+  if(window.FB && window.FB.ready){
+    try{
+      const { db, doc, setDoc } = window.FB;
+      await setDoc(doc(db,'proyectos',obra,'config','password'), { valor:newPass, actualizado:new Date().toISOString() });
+    }catch(e){ console.warn('Guardar contraseña en nube:', e); }
+  }
+}
+
+// Cargar las contraseñas personalizadas desde Firebase al iniciar
+async function cargarPasswordsPersonalizadas(){
+  if(!window.FB || !window.FB.ready){
+    window.addEventListener('firebase-ready', cargarPasswordsPersonalizadas, { once:true });
+    return;
+  }
+  try{
+    const { db, doc, getDoc } = window.FB;
+    for(const obra of Object.keys(PASSWORDS)){
+      try{
+        const snap = await getDoc(doc(db,'proyectos',obra,'config','password'));
+        if(snap.exists() && snap.data().valor){
+          passwordsPersonalizadas[obra] = snap.data().valor;
+        }
+      }catch(e){ /* proyecto sin contraseña personalizada, usa la genérica */ }
+    }
+  }catch(e){ console.warn('Cargar contraseñas:', e); }
+}
+
+function toggleUserMenu(){
+  document.getElementById('user-menu').classList.toggle('show');
+}
+
+function openChangePassword(){
+  toggleUserMenu();
+  document.getElementById('change-password-modal').style.display='flex';
+}
+
+function closeChangePassword(){
+  document.getElementById('change-password-modal').style.display='none';
+}
+
+function saveNewPassword(){
+  const current=document.getElementById('current-pass').value;
+  const newPass=document.getElementById('new-pass').value;
+  const confirm=document.getElementById('confirm-pass').value;
+  const errorEl=document.getElementById('pass-change-error');
+  
+  if(!current||!newPass||!confirm){errorEl.style.display='block';errorEl.textContent='Completa todos los campos';return;}
+  if(current!==getPassword(currentObra)){errorEl.style.display='block';errorEl.textContent='Contraseña actual incorrecta';return;}
+  if(newPass.length<4){errorEl.style.display='block';errorEl.textContent='Mínimo 4 caracteres';return;}
+  if(newPass!==confirm){errorEl.style.display='block';errorEl.textContent='Las contraseñas no coinciden';return;}
+  
+  setPassword(currentObra,newPass);
+  closeChangePassword();
+  showToast('✓ Contraseña actualizada');
+  document.getElementById('current-pass').value='';
+  document.getElementById('new-pass').value='';
+  document.getElementById('confirm-pass').value='';
+  errorEl.style.display='none';
+}
+
+const KEY='lafinur_obra_state';
+
+// Datos de la app
+const PHASES=[
+  {id:'fase1',name:'Preparación y diagnóstico',due:'15 feb'},
+  {id:'fase2',name:'Diseño y aprobación',due:'1 mar'},
+  {id:'fase3',name:'Fabricación',due:'30 abr'},
+  {id:'fase4',name:'Instalación',due:'31 may'},
+  {id:'fase5',name:'Terminación',due:'15 jun'}
+];
+
+const BUDGET={opt:[
+  {id:'diseño',name:'Diseño y proyecto',price:15000,status:'yes'},
+  {id:'fab',name:'Fabricación muebles',price:45000,status:'pend'},
+  {id:'inst',name:'Instalación',price:12000,status:'base'},
+  {id:'acabados',name:'Acabados y detalles',price:8000,status:'pend'}
+]};
+
+let state=null;
+
+function blankState(){
+  const s={phases:{},chat:[],punch:[],budget:{},updated:0};
+  PHASES.forEach(p=>{s.phases[p.id]={media:[]};});
+  BUDGET.opt.forEach(o=>{s.budget[o.id]={status:'pend'};});
+  return s;
+}
+
+async function load(){
+  try{const r=await window.storage.get(KEY,true);
+    if(r&&r.value){state=JSON.parse(r.value);ensureShape();return;}}catch(e){}
+  state=blankState();await save(true);
+}
+
+function ensureShape(){
+  if(!state.chat)state.chat=[];if(!state.punch)state.punch=[];
+  if(!state.budget){state.budget={};BUDGET.opt.forEach(o=>state.budget[o.id]={status:'pend'});}
+  PHASES.forEach(ph=>{if(!state.phases[ph.id].media)state.phases[ph.id].media=[];});
+}
+
+let saveTimer=null;
+async function save(silent){
+  state.updated=Date.now();
+  if(!silent)document.getElementById('saving').textContent='guardando…';
+  try{await window.storage.set(KEY,JSON.stringify(state),true);
+    if(!silent){document.getElementById('saving').textContent='guardado ✓';
+      clearTimeout(saveTimer);saveTimer=setTimeout(()=>document.getElementById('saving').textContent='',1500);}
+  }catch(e){document.getElementById('saving').textContent='sin conexión';}
+}
+
+function renderAll(){
+  renderPhases();renderBudget();renderChat();renderPunch();renderCalendar();
+}
+
+function renderPhases(){
+  const html=PHASES.map(p=>`
+    <div class="section" style="margin-bottom:20px">
+      <h3 style="font-family:'Fraunces',serif;font-size:16px;margin-bottom:8px">${p.name}</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <input type="text" placeholder="Foto/video URL" data-phase="${p.id}" style="padding:10px 12px;border:1px solid var(--linea);border-radius:3px;font-size:12px">
+        <button onclick="addMedia('${p.id}')" style="padding:10px;background:var(--verde);color:white;border:none;border-radius:3px;cursor:pointer;font-weight:500">Agregar</button>
+      </div>
+      <div class="gallery">${(state.phases[p.id].media||[]).map(m=>`
+        <div class="thumb" onclick="openLightbox('${m.url}','${m.type||'image'}')">
+          ${m.type==='video'?`<video><source src="${m.url}"></video>`:`<img src="${m.url}">`}
+        </div>
+      `).join('')}</div>
+    </div>
+  `).join('');
+  
+  const mediaList=document.getElementById('media-list');
+  mediaList.innerHTML=(state.phases.fase1?.media||[]).map(m=>`
+    <div class="thumb" onclick="openLightbox('${m.url}','${m.type||'image'}')">
+      ${m.type==='video'?`<video><source src="${m.url}"></video>`:`<img src="${m.url}">`}
+    </div>
+  `).join('');
+  
+  document.getElementById('phases-list').innerHTML=html;
+}
+
+function addMedia(phaseId){
+  const input=document.querySelector(`input[data-phase="${phaseId}"]`);
+  const url=input.value.trim();
+  if(!url){alert('Ingresa una URL');return;}
+  if(!state.phases[phaseId].media)state.phases[phaseId].media=[];
+  state.phases[phaseId].media.push({url,type:url.includes('.mp4')?'video':'image'});
+  input.value='';
+  save();renderPhases();
+}
+
+function openLightbox(url,type){
+  const img=document.getElementById('lightbox-img');
+  const vid=document.getElementById('lightbox-video');
+  img.style.display='none';
+  vid.style.display='none';
+  if(type==='video'){vid.src=url;vid.style.display='block';}
+  else{img.src=url;img.style.display='block';}
+  document.getElementById('lightbox').classList.add('on');
+}
+
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('on');
+}
+
+function renderBudget(){
+  const html=Object.entries(state.budget).map(([id,data])=>{
+    const opt=BUDGET.opt.find(o=>o.id===id);
+    return`<div class="bud-row">
+      <div class="bname">${opt.name}</div>
+      <div class="bprice">$${opt.price}</div>
+      <select class="bud-status bs-${data.status}" onchange="setBudgetStatus('${id}',this.value);save();renderBudget()" style="border:none;background:transparent;cursor:pointer;font-family:'JetBrains Mono';font-size:9px">
+        <option value="base">Base</option>
+        <option value="pend">Pendiente</option>
+        <option value="yes">Pagado</option>
+        <option value="no">Cancelado</option>
+      </select>
+    </div>`;
+  }).join('');
+  document.getElementById('budget-list').innerHTML=`<div class="bud-group">${html}</div>`;
+}
+
+function setBudgetStatus(id,status){
+  state.budget[id].status=status;
+}
+
+function renderChat(){
+  const phases=['fase1','fase2','fase3','fase4','fase5'];
+  const filter=document.getElementById('chat-phase-filter');
+  filter.innerHTML=phases.map(p=>`<button class="chip" onclick="filterChat('${p}')">${PHASES.find(ph=>ph.id===p).name.split(' ')[0]}</button>`).join('');
+  
+  const msgs=document.getElementById('chat-msgs');
+  const demoMsgs=[
+    {who:'Lafinur',msg:'Iniciamos las tareas el lunes.',phase:'fase1',time:'Hace 2 días'},
+    {who:'Cliente',msg:'Perfecto, nos vemos entonces.',phase:'fase1',time:'Hace 2 días'}
+  ];
+  msgs.innerHTML=(state.chat.length?state.chat:demoMsgs).map(m=>`
+    <div class="msg ${m.who==='Cliente'?'cliente':'obra'}">
+      <div class="who">${m.who}</div>
+      <div>${m.msg}</div>
+      <div class="time">${m.time||'Ahora'}</div>
+    </div>
+  `).join('')||'<div class="chat-empty">No hay mensajes aún</div>';
+}
+
+function filterChat(phase){
+  renderChat();
+}
+
+function addChatMsg(){
+  const input=document.getElementById('chat-input');
+  const msg=input.value.trim();
+  if(!msg)return;
+  state.chat.push({who:'Cliente',msg,time:'Ahora'});
+  input.value='';
+  save();renderChat();
+}
+
+function renderPunch(){
+  const html=(state.punch||[]).map((p,i)=>`
+    <div class="punch ${p.done?'done':''}">
+      <div class="punch-check" onclick="togglePunch(${i})">${p.done?'✓':''}</div>
+      <div class="punch-txt">${p.text}</div>
+      <div class="punch-meta">Agregado hace poco</div>
+    </div>
+  `).join('')||'<div style="color:var(--granito-2);font-style:italic">Sin tareas pendientes</div>';
+  document.getElementById('punch-list').innerHTML=html;
+}
+
+function togglePunch(idx){
+  state.punch[idx].done=!state.punch[idx].done;
+  save();renderPunch();
+}
+
+function addPunch(){
+  const input=document.getElementById('punch-input');
+  const text=input.value.trim();
+  if(!text)return;
+  if(!state.punch)state.punch=[];
+  state.punch.push({text,done:false});
+  input.value='';
+  save();renderPunch();
+}
+
+function renderCalendar(){
+  const html=PHASES.map(p=>`
+    <div class="cal-phase ${state.phases[p.id].media?.length?'done':''}">
+      <div>
+        <div class="cal-name">${p.name}</div>
+        <div class="cal-when">Plazo: ${p.due}</div>
+      </div>
+      <div class="cal-status">${state.phases[p.id].media?.length?'Completado':'Pendiente'}</div>
+    </div>
+  `).join('');
+  document.getElementById('calendar-list').innerHTML=html;
+}
+
+function switchTab(tab){
+  document.querySelectorAll('main').forEach(m=>m.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('main')[['media','presupuesto','chat','checklist','timeline'].indexOf(tab)].classList.add('on');
+  event.target.classList.add('on');
+}
+
+function showToast(msg){
+  const toast=document.getElementById('toast');
+  toast.textContent=msg;
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'),2000);
+}
+
+let pollInterval=null;
+function poll(){
+  clearInterval(pollInterval);
+  pollInterval=setInterval(async()=>load(),5000);
+}
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.whoami')&&!e.target.closest('#user-menu')){
+    document.getElementById('user-menu').classList.remove('show');
+  }
+});
+
+(async()=>{checkContrato();await load();})();
+</script>
+<!-- MODAL MUESTRARIO (galería de proyecto terminado) -->
+<div id="muestrario-modal" class="muestrario-modal">
+  <div class="muestrario-contenido">
+    <div class="muestrario-header">
+      <div>
+        <div class="muestrario-eyebrow">Galería · Proyecto terminado</div>
+        <h2 id="muestrario-titulo">Lafinur</h2>
+      </div>
+      <button class="muestrario-cerrar" onclick="cerrarMuestrario()">✕</button>
+    </div>
+    <div id="muestrario-upload" style="display:none">
+      <div class="muestrario-drop" id="muestrario-drop" onclick="document.getElementById('muestrario-file').click()">
+        <input type="file" id="muestrario-file" accept="image/*" multiple style="display:none" onchange="subirFotosMuestrario(event)">
+        <span class="up-ico">↑</span> Subí fotos o arrastralas aquí
+      </div>
+    </div>
+    <div id="muestrario-galeria" class="muestrario-galeria"></div>
+    <div id="muestrario-vacio" class="muestrario-vacio" style="display:none">Todavía no hay fotos en esta galería.</div>
+  </div>
+</div>
+
+<!-- VISOR de foto individual con navegación -->
+<div id="foto-visor" class="foto-visor" onclick="cerrarFotoVisor()">
+  <button id="foto-prev" class="foto-nav foto-nav-prev" onclick="fotoAnterior(event)" aria-label="Anterior">‹</button>
+  <img id="foto-visor-img" src="" alt="" onclick="event.stopPropagation()">
+  <button id="foto-next" class="foto-nav foto-nav-next" onclick="fotoSiguiente(event)" aria-label="Siguiente">›</button>
+  <button class="foto-cerrar" onclick="cerrarFotoVisor()" aria-label="Cerrar">✕</button>
+</div>
+
+<!-- MODAL INACTIVIDAD -->
+<div id="inactividad-modal" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(46,49,52,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:24px">
+  <div style="background:#FBFAF7;border-radius:20px;max-width:400px;width:100%;padding:36px 32px;text-align:center;box-shadow:0 30px 70px -20px rgba(0,0,0,.5);font-family:'Inter',sans-serif">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9C5B3C;margin-bottom:14px">Sesión inactiva</div>
+    <h2 style="font-family:'Playfair Display',serif;font-weight:400;font-size:28px;color:#2E3134;margin-bottom:12px">¿Seguís ahí?</h2>
+    <p style="font-size:14px;color:#5A5F64;margin-bottom:8px;line-height:1.6">Detectamos que no hubo actividad por un rato. Por seguridad, la sesión volverá al inicio en <strong id="inactividad-cuenta" style="color:#2E3134">60</strong> segundos.</p>
+    <div style="display:flex;gap:10px;margin-top:24px">
+      <button onclick="continuarSesion()" style="flex:1;padding:13px;background:#4A6B5F;color:white;border:none;border-radius:100px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">Sigo aquí</button>
+      <button onclick="volverAlInicioInactividad()" style="flex:1;padding:13px;background:transparent;color:#5A5F64;border:1px solid #D6D0C4;border-radius:100px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif">Salir</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  const TIEMPO_INACTIVIDAD = 10 * 60 * 1000; // 10 minutos
+  const TIEMPO_AVISO = 60; // 60 segundos de cuenta regresiva
+  let timerInactividad = null;
+  let timerCuenta = null;
+  let segundos = TIEMPO_AVISO;
+
+  function reiniciarTimer(){
+    clearTimeout(timerInactividad);
+    // Si el modal está visible, no reiniciar por actividad (solo el botón lo hace)
+    const modal = document.getElementById('inactividad-modal');
+    if(modal && modal.style.display === 'flex') return;
+    timerInactividad = setTimeout(mostrarAviso, TIEMPO_INACTIVIDAD);
+  }
+  function mostrarAviso(){
+    const modal = document.getElementById('inactividad-modal');
+    if(!modal) return;
+    segundos = TIEMPO_AVISO;
+    document.getElementById('inactividad-cuenta').textContent = segundos;
+    modal.style.display = 'flex';
+    clearInterval(timerCuenta);
+    timerCuenta = setInterval(function(){
+      segundos--;
+      const el = document.getElementById('inactividad-cuenta');
+      if(el) el.textContent = segundos;
+      if(segundos <= 0){ volverAlInicioInactividad(); }
+    }, 1000);
+  }
+  window.continuarSesion = function(){
+    clearInterval(timerCuenta);
+    document.getElementById('inactividad-modal').style.display = 'none';
+    reiniciarTimer();
+  };
+  window.volverAlInicioInactividad = function(){
+    clearInterval(timerCuenta);
+    clearTimeout(timerInactividad);
+    window.location.href = 'index.html';
+  };
+  // Eventos que cuentan como actividad
+  ['mousemove','mousedown','keydown','touchstart','scroll','click'].forEach(function(ev){
+    document.addEventListener(ev, reiniciarTimer, { passive: true });
+  });
+  reiniciarTimer();
+})();
+</script>
+
+</body>
+</html>
