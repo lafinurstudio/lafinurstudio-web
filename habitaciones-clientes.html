@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<!--
+============================================================================
+  ⚠️  NOTA DE MIGRACIÓN — igual que habitaciones.html
+  Esta vista pública lee de la MISMA base Firebase (colección 'habitaciones').
+  Al migrar a dominio propio:
+    1) Reemplazar 'firebaseConfig' por el del proyecto nuevo (buscar
+       "CREDENCIALES FIREBASE").
+    2) Revisar enlaces internos (index.html, habitaciones.html).
+    3) El botón "Iniciá sesión" es un PLACEHOLDER preparado para la
+       Etapa 3 (registro de usuarios). Hoy solo muestra un aviso.
+============================================================================
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Habitaciones · Reservá tu estadía</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cal:#F2EFE9; --papel:#FBFAF7; --granito:#2E3134; --granito-2:#6A6F74;
+  --roble:#B08147; --cobre:#9C5B3C; --verde:#4A6B5F; --verde-2:#3d5849;
+  --verde-bg:#E7EDE9; --linea:#E4DFD5; --linea-2:#D6D0C4;
+  --sombra-sm:0 2px 8px rgba(46,49,52,.05);
+  --sombra:0 12px 34px -14px rgba(46,49,52,.16);
+  --sombra-lg:0 26px 60px -22px rgba(46,49,52,.24);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--cal);color:var(--granito);font-family:'Inter',sans-serif;font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--linea);background:var(--papel);position:sticky;top:0;z-index:50}
+.brand{font-family:'Playfair Display',serif;font-size:20px;color:var(--granito);text-decoration:none}
+.brand span{color:var(--verde)}
+.btn-login{background:var(--verde);color:white;border:none;border-radius:100px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter';transition:all .2s}
+.btn-login:hover{background:var(--verde-2)}
+
+.hero{text-align:center;padding:60px 24px 40px;max-width:760px;margin:0 auto}
+.hero .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--cobre);margin-bottom:16px}
+.hero h1{font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(34px,6vw,50px);line-height:1.08;margin-bottom:14px}
+.hero p{font-size:16px;color:var(--granito-2)}
+
+.container{max-width:1140px;margin:0 auto;padding:20px 28px 80px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:26px}
+.card{background:var(--papel);border:1px solid var(--linea);border-radius:18px;overflow:hidden;cursor:pointer;transition:all .25s;box-shadow:var(--sombra-sm)}
+.card:hover{transform:translateY(-4px);box-shadow:var(--sombra)}
+.card-foto-wrap{position:relative;height:220px;background:var(--verde-bg)}
+.card-foto{width:100%;height:100%;object-fit:cover;display:block}
+.card-foto-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--verde);font-size:44px}
+.card-estado{position:absolute;top:14px;left:14px;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:6px 12px;border-radius:100px;background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.card-estado.disponible{color:#4A6B5F}
+.card-estado.ocupada{color:#9C5B3C}
+.card-estado .dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.card-foto-count{position:absolute;bottom:14px;right:14px;font-size:11px;background:rgba(46,49,52,.7);color:white;padding:4px 10px;border-radius:100px;font-family:'JetBrains Mono',monospace}
+.card-body{padding:20px}
+.card-nombre{font-family:'Fraunces',serif;font-weight:500;font-size:20px;margin-bottom:6px}
+.card-cap{font-size:12.5px;color:var(--granito-2);margin-bottom:12px}
+.card-desc{font-size:13.5px;color:var(--granito);margin-bottom:14px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-servicios{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.card-serv-tag{font-size:11px;background:var(--verde-bg);color:var(--verde);padding:4px 10px;border-radius:100px;font-family:'JetBrains Mono',monospace}
+.card-precio-lock{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--linea);padding-top:14px}
+.precio-oculto{font-size:13px;color:var(--granito-2);display:flex;align-items:center;gap:7px}
+.precio-oculto .candado{font-size:14px}
+.ver-precio{background:transparent;border:1px solid var(--verde);color:var(--verde);border-radius:100px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter';transition:all .18s}
+.ver-precio:hover{background:var(--verde);color:white}
+
+.cargando,.vacio{text-align:center;padding:70px 20px;color:var(--granito-2)}
+.vacio h3{font-family:'Fraunces',serif;font-weight:500;font-size:22px;color:var(--granito);margin-bottom:10px}
+
+/* MODAL DETALLE */
+.modal{display:none;position:fixed;inset:0;z-index:200;background:rgba(46,49,52,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto}
+.modal-card{background:var(--cal);border-radius:20px;max-width:720px;width:100%;box-shadow:var(--sombra-lg);overflow:hidden}
+.modal-galeria{position:relative;height:340px;background:var(--verde-bg)}
+.modal-galeria img{width:100%;height:100%;object-fit:cover}
+.modal-galeria .ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--verde);font-size:60px}
+.modal-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:none;background:rgba(255,255,255,.85);color:var(--granito);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-nav:hover{background:white}
+.modal-nav.prev{left:16px}.modal-nav.next{right:16px}
+.modal-cerrar{position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.85);color:var(--granito);font-size:15px;cursor:pointer;z-index:2}
+.modal-cerrar:hover{background:white}
+.modal-body{padding:28px 30px 32px}
+.modal-estado{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 12px;border-radius:100px;margin-bottom:14px}
+.modal-estado.disponible{background:var(--verde-bg);color:var(--verde)}
+.modal-estado.ocupada{background:#F3E4DA;color:var(--cobre)}
+.modal-estado .dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.modal-body h2{font-family:'Playfair Display',serif;font-weight:400;font-size:30px;margin-bottom:8px}
+.modal-cap{font-size:13.5px;color:var(--granito-2);margin-bottom:18px}
+.modal-desc{font-size:15px;color:var(--granito);margin-bottom:22px;line-height:1.7}
+.modal-serv-titulo{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--granito-2);margin-bottom:12px}
+.modal-servicios{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px}
+.modal-serv{font-size:12.5px;background:var(--verde-bg);color:var(--verde);padding:6px 13px;border-radius:100px}
+.modal-reserva{background:white;border:1px solid var(--linea-2);border-radius:14px;padding:22px;text-align:center}
+.modal-reserva .precio-msg{font-size:14px;color:var(--granito-2);margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px}
+.modal-reserva .btn-reservar{width:100%;padding:14px;background:var(--verde);color:white;border:none;border-radius:100px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter';transition:all .2s}
+.modal-reserva .btn-reservar:hover{background:var(--verde-2)}
+.modal-reserva .btn-reservar:disabled{background:var(--linea-2);cursor:not-allowed}
+
+/* AVISO LOGIN (placeholder) */
+.login-aviso{display:none;position:fixed;inset:0;z-index:300;background:rgba(46,49,52,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:24px}
+.login-aviso-card{background:white;border-radius:20px;max-width:400px;width:100%;padding:36px 32px;text-align:center;box-shadow:var(--sombra-lg)}
+.login-aviso-card .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--cobre);margin-bottom:14px}
+.login-aviso-card h2{font-family:'Playfair Display',serif;font-weight:400;font-size:26px;margin-bottom:12px}
+.login-aviso-card p{font-size:14px;color:var(--granito-2);margin-bottom:24px;line-height:1.6}
+.login-aviso-card button{width:100%;padding:13px;border-radius:100px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter';border:none}
+.login-aviso-card .cerrar-aviso{background:var(--verde);color:white}
+.login-aviso-card .cerrar-aviso:hover{background:var(--verde-2)}
+
+@media(max-width:600px){
+  .topbar{padding:16px 20px}
+  .container{padding:16px 20px 60px}
+  .modal-galeria{height:240px}
+}
+</style>
+<script type="module">
+  // ⚠️ CREDENCIALES FIREBASE — TEMPORALES (proyecto 'lafinurstudio')
+  // AL MIGRAR: reemplazar por el proyecto Firebase propio.
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import { getFirestore, collection, getDocs }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+  const firebaseConfig = {
+    apiKey: "AIzaSyBtfugXk5ZsI5SZ8V-QyxWOzz7-5hFU8U8",
+    authDomain: "lafinurstudio.firebaseapp.com",
+    projectId: "lafinurstudio",
+    storageBucket: "lafinurstudio.firebasestorage.app",
+    messagingSenderId: "383108792937",
+    appId: "1:383108792937:web:6a6be95caa1171f968d8f8"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  window.FB = { ready:true, db, collection, getDocs };
+  window.dispatchEvent(new Event('firebase-ready'));
+</script>
+</head>
+<body>
+<script>
+  // Sistema privado por ahora: si no pasó por la portada con contraseña, redirigir
+  if(sessionStorage.getItem('guatamareAcceso') !== 'true'){
+    window.location.href = 'habitaciones-inicio.html';
+  }
+</script>
+
+<div class="topbar">
+  <a href="index.html" class="brand">Lafinur <span>Studio</span></a>
+  <button class="btn-login" onclick="mostrarAvisoLogin()">Iniciar sesión</button>
+</div>
+
+<div class="hero">
+  <div class="eyebrow">Alojamiento</div>
+  <h1>Encontrá tu habitación</h1>
+  <p>Explorá nuestras habitaciones disponibles. Registrate para ver precios y reservar tu estadía.</p>
+</div>
+
+<div class="container">
+  <div id="lista" class="cargando">Cargando habitaciones…</div>
+</div>
+
+<!-- MODAL DETALLE -->
+<div id="detalle-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-galeria" id="detalle-galeria"></div>
+    <button class="modal-cerrar" onclick="cerrarDetalle()">✕</button>
+    <div class="modal-body">
+      <div id="detalle-estado"></div>
+      <h2 id="detalle-nombre"></h2>
+      <div class="modal-cap" id="detalle-cap"></div>
+      <div class="modal-desc" id="detalle-desc"></div>
+      <div id="detalle-serv-bloque">
+        <div class="modal-serv-titulo">Servicios</div>
+        <div class="modal-servicios" id="detalle-servicios"></div>
+      </div>
+      <div class="modal-reserva">
+        <div class="precio-msg"><span>🔒</span> Iniciá sesión para ver el precio y reservar</div>
+        <button class="btn-reservar" onclick="mostrarAvisoLogin()">Iniciar sesión para reservar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AVISO LOGIN (placeholder para Etapa 3) -->
+<div id="login-aviso" class="login-aviso">
+  <div class="login-aviso-card">
+    <div class="eyebrow">Próximamente</div>
+    <h2>Registro de usuarios</h2>
+    <p>El sistema de cuentas para ver precios y reservar estará disponible muy pronto. Estamos trabajando en ello.</p>
+    <button class="cerrar-aviso" onclick="cerrarAvisoLogin()">Entendido</button>
+  </div>
+</div>
+
+<script>
+let habitaciones = [];
+let fotosDetalle = [];
+let fotoDetalleIdx = 0;
+
+function colHabitaciones(){
+  const { db, collection } = window.FB;
+  return collection(db, 'habitaciones');
+}
+async function cargar(){
+  const cont = document.getElementById('lista');
+  if(!window.FB || !window.FB.ready){
+    window.addEventListener('firebase-ready', cargar, { once:true });
+    return;
+  }
+  try{
+    const snap = await window.FB.getDocs(colHabitaciones());
+    habitaciones = [];
+    snap.forEach(d => habitaciones.push({ id:d.id, ...d.data() }));
+    render();
+  }catch(e){
+    cont.className = 'vacio';
+    cont.innerHTML = '<h3>No se pudieron cargar</h3><p>Intentá de nuevo en unos minutos.</p>';
+    console.warn('Cargar:', e);
+  }
+}
+function render(){
+  const cont = document.getElementById('lista');
+  if(habitaciones.length === 0){
+    cont.className = 'vacio';
+    cont.innerHTML = '<h3>Aún no hay habitaciones publicadas</h3><p>Volvé pronto para ver nuestras opciones.</p>';
+    return;
+  }
+  cont.className = 'grid';
+  cont.innerHTML = habitaciones.map((h, idx) => {
+    const foto = (h.fotos && h.fotos.length)
+      ? `<img src="${h.fotos[0]}" class="card-foto" alt="${esc(h.nombre)}"><span class="card-foto-count">▤ ${h.fotos.length}</span>`
+      : `<div class="card-foto-ph">⌂</div>`;
+    const estadoClase = h.estado === 'ocupada' ? 'ocupada' : 'disponible';
+    const estadoTxt = h.estado === 'ocupada' ? 'Ocupada' : 'Disponible';
+    const servicios = (h.servicios||[]).slice(0,4).map(s => `<span class="card-serv-tag">${esc(s)}</span>`).join('');
+    return `
+      <div class="card" onclick="verDetalle(${idx})">
+        <div class="card-foto-wrap">
+          ${foto}
+          <span class="card-estado ${estadoClase}"><span class="dot"></span>${estadoTxt}</span>
+        </div>
+        <div class="card-body">
+          <div class="card-nombre">${esc(h.nombre||'Habitación')}</div>
+          <div class="card-cap">Hasta ${h.capacidad||1} ${(h.capacidad==1)?'persona':'personas'}</div>
+          ${h.descripcion?`<div class="card-desc">${esc(h.descripcion)}</div>`:''}
+          ${servicios?`<div class="card-servicios">${servicios}</div>`:''}
+          <div class="card-precio-lock">
+            <span class="precio-oculto"><span class="candado">🔒</span> Precio al iniciar sesión</span>
+            <button class="ver-precio" onclick="event.stopPropagation();mostrarAvisoLogin()">Ver precio</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+function esc(s){ return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* DETALLE */
+function verDetalle(idx){
+  const h = habitaciones[idx];
+  if(!h) return;
+  document.getElementById('detalle-nombre').textContent = h.nombre||'Habitación';
+  document.getElementById('detalle-cap').textContent = `Hasta ${h.capacidad||1} ${(h.capacidad==1)?'persona':'personas'}`;
+  document.getElementById('detalle-desc').textContent = h.descripcion||'';
+  const estadoClase = h.estado === 'ocupada' ? 'ocupada' : 'disponible';
+  const estadoTxt = h.estado === 'ocupada' ? 'Ocupada' : 'Disponible';
+  document.getElementById('detalle-estado').className = 'modal-estado ' + estadoClase;
+  document.getElementById('detalle-estado').innerHTML = `<span class="dot"></span>${estadoTxt}`;
+  // Servicios
+  const servBloque = document.getElementById('detalle-serv-bloque');
+  if(h.servicios && h.servicios.length){
+    servBloque.style.display = 'block';
+    document.getElementById('detalle-servicios').innerHTML = h.servicios.map(s => `<span class="modal-serv">${esc(s)}</span>`).join('');
+  } else { servBloque.style.display = 'none'; }
+  // Galería
+  fotosDetalle = (h.fotos||[]).slice();
+  fotoDetalleIdx = 0;
+  renderGaleriaDetalle();
+  // Botón reservar deshabilitado si está ocupada
+  const btnReservar = document.querySelector('#detalle-modal .btn-reservar');
+  if(h.estado === 'ocupada'){ btnReservar.textContent = 'No disponible por ahora'; btnReservar.disabled = true; }
+  else { btnReservar.textContent = 'Iniciar sesión para reservar'; btnReservar.disabled = false; }
+  document.getElementById('detalle-modal').style.display = 'flex';
+}
+function renderGaleriaDetalle(){
+  const g = document.getElementById('detalle-galeria');
+  if(!fotosDetalle.length){
+    g.innerHTML = '<div class="ph">⌂</div>';
+    return;
+  }
+  const flechas = fotosDetalle.length > 1
+    ? `<button class="modal-nav prev" onclick="event.stopPropagation();fotoDetPrev()">‹</button><button class="modal-nav next" onclick="event.stopPropagation();fotoDetNext()">›</button>`
+    : '';
+  g.innerHTML = `<img src="${fotosDetalle[fotoDetalleIdx]}" alt="">${flechas}`;
+}
+function fotoDetNext(){ fotoDetalleIdx = (fotoDetalleIdx+1)%fotosDetalle.length; renderGaleriaDetalle(); }
+function fotoDetPrev(){ fotoDetalleIdx = (fotoDetalleIdx-1+fotosDetalle.length)%fotosDetalle.length; renderGaleriaDetalle(); }
+function cerrarDetalle(){ document.getElementById('detalle-modal').style.display = 'none'; }
+
+/* AVISO LOGIN (placeholder) */
+function mostrarAvisoLogin(){ document.getElementById('login-aviso').style.display = 'flex'; }
+function cerrarAvisoLogin(){ document.getElementById('login-aviso').style.display = 'none'; }
+
+// Cerrar modales al tocar el fondo
+document.getElementById('detalle-modal').addEventListener('click', function(e){ if(e.target === this) cerrarDetalle(); });
+document.getElementById('login-aviso').addEventListener('click', function(e){ if(e.target === this) cerrarAvisoLogin(); });
+// Teclado en galería del detalle
+document.addEventListener('keydown', function(e){
+  const modal = document.getElementById('detalle-modal');
+  if(getComputedStyle(modal).display === 'none') return;
+  if(e.key === 'ArrowRight' && fotosDetalle.length>1) fotoDetNext();
+  else if(e.key === 'ArrowLeft' && fotosDetalle.length>1) fotoDetPrev();
+  else if(e.key === 'Escape') cerrarDetalle();
+});
+
+cargar();
+</script>
+</body>
+</html>
