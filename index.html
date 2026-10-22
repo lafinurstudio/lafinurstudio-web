@@ -1,265 +1,180 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Lafinur Studio · Diseño & Arquitectura en Buenos Aires. Estudio de interiorismo y obra con enfoque sustentable: materiales de bajo impacto, eficiencia energética y diseño consciente integrado al entorno.">
-<meta name="keywords" content="diseño y arquitectura, arquitectura sustentable, diseño de interiores, interiorismo, remodelaciones, obra, estudio de arquitectura Buenos Aires, arquitectura sustentable Argentina, diseño consciente, eficiencia energética, Lafinur Studio">
-<meta name="author" content="Lafinur Studio">
-<meta name="robots" content="index, follow">
-<meta name="language" content="Spanish">
-<title>Lafinur Studio · Diseño & Arquitectura Sustentable en Buenos Aires</title>
-
-<!-- Geolocalización para SEO local -->
-<meta name="geo.region" content="AR-C">
-<meta name="geo.placename" content="Buenos Aires, Argentina">
-<meta name="geo.position" content="-34.5760;-58.4075">
-<meta name="ICBM" content="-34.5760, -58.4075">
-
-<!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
+<title>Lafinur Studio · Arquitectura y Diseño en Buenos Aires</title>
+<meta name="description" content="Estudio de arquitectura y diseño en Palermo, Buenos Aires. Diseñamos, proyectamos y ejecutamos proyectos a medida. Cuadernos ilustrados diseñados y fabricados en Argentina.">
+<link rel="canonical" href="https://lafinurstudio.com/">
+<meta property="og:title" content="Lafinur Studio · Arquitectura y Diseño en Buenos Aires">
+<meta property="og:description" content="Estudio de arquitectura y diseño en Palermo, Buenos Aires. Diseñamos, proyectamos y ejecutamos proyectos a medida. Cuadernos ilustrados diseñados y fabricados en Argentina.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Lafinur Studio · Diseño & Arquitectura">
-<meta property="og:description" content="Estudio de diseño y arquitectura en Buenos Aires con enfoque sustentable: interiores y obra con materiales de bajo impacto, eficiencia energética y diseño integrado al entorno.">
-<meta property="og:url" content="https://lafinurstudio.com">
-<meta property="og:site_name" content="Lafinur Studio">
 <meta property="og:locale" content="es_AR">
-
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Lafinur Studio · Diseño & Arquitectura">
-<meta name="twitter:description" content="Diseño y arquitectura sustentable en Buenos Aires. Interiores y obra con materiales de bajo impacto y eficiencia energética.">
-
-<!-- Descripción en inglés para alcance internacional -->
-<meta name="description:en" content="Lafinur Studio · Design & Architecture in Buenos Aires. Sustainable interior design and construction: low-impact materials, energy efficiency and conscious design.">
-
-<link rel="canonical" href="https://lafinurstudio.com">
+<meta property="og:site_name" content="Lafinur Studio">
+<meta property="og:url" content="https://lafinurstudio.com/">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Dream+Avenue&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Playfair+Display:wght@700;800;900&amp;display=swap" rel="stylesheet">
 <style>
-:root{
-  --cal:#F2EFE9; --granito:#2E3134; --granito-2:#5A5F64;
-  --roble:#B08147; --cobre:#9C5B3C; --verde:#4A6B5F;
-  --verde-bg:#E4EBE6; --linea:#D6D0C4; --papel:#FBFAF7;
-  --amber-bg:#F3E9DA; --verde-header:#a3c6a8;
-}
-
-*{box-sizing:border-box;margin:0;padding:0}
-
-body{
-  background:var(--cal);color:var(--granito);font-family:'Inter',sans-serif;
-  font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased;
-  display:flex;flex-direction:column;min-height:100vh;
-}
-
-main{flex:1}
-
-/* HEADER */
-header{
-  background:transparent;border-bottom:none;padding:50px 22px 40px;
-  text-align:center;
-}
-.header-wrap{
-  max-width:1000px;margin:0 auto;
-}
-.header-prefix{
-  font-family:'Dream Avenue',serif;font-size:18px;font-weight:700;
-  letter-spacing:.12em;text-transform:uppercase;color:var(--granito);
-  margin-bottom:12px;
-  display:block;
-}
-.logo{
-  font-family:'Playfair Display',serif;font-size:72px;font-weight:400;
-  letter-spacing:.02em;color:var(--granito);
-  text-decoration:none;margin-bottom:12px;
-  display:block;line-height:1.1;
-}
-.tagline{
-  font-family:'Inter',sans-serif;font-size:14px;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--granito-2);font-weight:400;
-}
-
-/* TARJETAS ACCESO */
-.access-section{
-  max-width:1000px;margin:0 auto;padding:80px 22px;width:100%;
-}
-.access-grid{
-  display:grid;grid-template-columns:1fr 1fr;gap:40px;
-}
-.access-card{
-  background:white;border:1px solid var(--linea);border-radius:12px;
-  padding:60px 40px;text-align:center;transition:all .3s;cursor:pointer;
-  text-decoration:none;color:inherit;display:flex;flex-direction:column;
-  justify-content:center;
-  min-height:380px;
-}
-.access-card:hover{
-  border-color:var(--verde);transform:translateY(-6px);
-  box-shadow:0 16px 40px rgba(0,0,0,.12);
-}
-.access-card h2{
-  font-family:'Fraunces',serif;font-weight:400;font-size:36px;
-  margin-bottom:20px;color:var(--granito);
-}
-.access-card p{
-  font-size:15px;color:var(--granito-2);margin-bottom:30px;line-height:1.8;
-}
-.access-card .arrow{
-  color:var(--verde);font-size:24px;transition:all .3s;
-  align-self:center;font-weight:500;
-}
-.access-card:hover .arrow{transform:translateX(6px)}
-
-/* FOOTER */
-footer{
-  background:var(--granito);color:white;padding:60px 22px 30px;
-  border-top:1px solid var(--linea);margin-top:auto;
-}
-.footer-wrap{max-width:1200px;margin:0 auto}
-.footer-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:40px;
-  margin-bottom:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.1);
-}
-.footer-col h4{
-  font-family:'Fraunces',serif;font-size:16px;font-weight:400;
-  margin-bottom:16px;
-}
-.footer-col{font-size:13px;line-height:1.8}
-.footer-col p{
-  color:rgba(255,255,255,.7);margin-bottom:12px;
-}
-.footer-col a{
-  display:block;color:rgba(255,255,255,.7);
-  text-decoration:none;transition:all .2s;margin-bottom:8px;
-  font-size:13px;
-}
-.footer-col a:hover{color:white}
-.footer-col strong{
-  display:block;color:white;margin-top:12px;margin-bottom:4px;
-  font-weight:500;
-}
-.footer-bottom{
-  display:flex;justify-content:space-between;align-items:center;
-  font-size:12px;color:rgba(255,255,255,.6);font-family:'JetBrains Mono',monospace;
-}
-.footer-social{display:flex;gap:16px;margin-top:12px}
-.footer-social a{
-  width:36px;height:36px;border:1px solid rgba(255,255,255,.4);
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-  color:white;text-decoration:none;transition:all .2s;font-size:16px;
-}
-.footer-social a:hover{
-  background:rgba(255,255,255,.15);border-color:white;
-}
-
-/* RESPONSIVE */
-@media(max-width:768px){
-  .header-prefix{font-size:14px}
-  .logo{font-size:48px}
-  .tagline{font-size:12px}
-  .access-section{padding:60px 22px}
-  .access-grid{grid-template-columns:1fr;gap:24px}
-  .access-card{
-    padding:40px 24px;
-    min-height:280px;
-  }
-  .access-card h2{font-size:28px;margin-bottom:16px}
-  .access-card p{font-size:14px}
-  .footer-grid{grid-template-columns:1fr}
-  .footer-bottom{flex-direction:column;gap:12px;text-align:center}
-}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#F2F1EE;font-family:'Archivo',system-ui,sans-serif;color:#2B151C}
+h1,h2{font-family:'Playfair Display',Georgia,serif}
+a{color:#2B151C}a:hover{color:#3F6E8F}
+img{max-width:100%}
+:focus-visible{outline:2px solid #3F6E8F;outline-offset:3px}
 </style>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "ProfessionalService",
-  "name": "Lafinur Studio",
-  "description": "Estudio de diseño y arquitectura en Buenos Aires con enfoque sustentable. Interiorismo y obra con materiales de bajo impacto, eficiencia energética y diseño consciente.",
-  "url": "https://lafinurstudio.com",
-  "email": "ami@lafinurstudio.com",
-  "areaServed": [
-    { "@type": "City", "name": "Buenos Aires" },
-    { "@type": "Country", "name": "Argentina" }
-  ],
-  "address": {
-    "@type": "PostalAddress",
-    "addressLocality": "Buenos Aires",
-    "addressCountry": "AR"
-  },
-  "knowsAbout": ["Arquitectura sustentable", "Diseño de interiores", "Interiorismo", "Eficiencia energética", "Diseño consciente", "Remodelaciones", "Obra"],
-  "slogan": "Diseño & Arquitectura"
-}
-</script>
 </head>
 <body>
-
+<header style="border-bottom: 1px solid #CFCDC6; background: #F2F1EE">
+<div style="max-width: 1280px; margin: 0 auto; padding: 20px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px">
+<a href="index.html" style="display: flex; align-items: center">
+<img src="img/logo.png" alt="Lafinur Studio" width="185" height="48" style="height: 48px; width: auto; display: block">
+</a>
+<nav aria-label="Principal" style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px">
+<a href="servicios.html" style="padding: 12px 14px; font-size: 15px; font-weight: 500; text-decoration: none">Servicios</a>
+<a href="tienda.html" style="padding: 12px 14px; font-size: 15px; font-weight: 500; text-decoration: none">Tienda</a>
+<a href="#contacto" style="padding: 12px 14px; font-size: 15px; font-weight: 500; text-decoration: none">Contacto</a>
+</nav>
+<a href="obrasencurso.html" style="padding: 11px 16px; border: 1px solid #2B151C; border-radius: 999px; font-size: 14px; font-weight: 500; text-decoration: none">Portal clientes</a>
+</div>
+</header>
 <main>
-  <!-- HEADER -->
-  <header>
-    <div class="header-wrap">
-      <span class="header-prefix">Proyectos de</span>
-      <h1 class="logo">Lafinur Studio</h1>
-      <div class="tagline">Diseño y Arquitectura</div>
-    </div>
-  </header>
+<!-- Hero -->
+<section style="max-width: 1280px; margin: 0 auto; padding: 112px 24px 120px">
+<div style="display: flex; flex-direction: column; gap: 32px; max-width: 980px">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #3F6E8F">Palermo, Buenos Aires</span>
+<h1 style="margin: 0; font-size: clamp(48px, 8vw, 116px); line-height: 0.95; font-weight: 800; letter-spacing: -0.035em">Estudio de arquitectura y diseño.</h1>
+<p style="margin: 0; max-width: 620px; font-size: 22px; line-height: 1.5; color: #3D3F39">Diseñamos, proyectamos y ejecutamos proyectos a medida.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 12px">
+<a href="servicios.html" style="padding: 16px 26px; background: #2B151C; color: #FFFFFF; border-radius: 999px; font-size: 16px; font-weight: 600; text-decoration: none">Ver servicios</a>
+<a href="tienda.html" style="padding: 15px 25px; border: 1px solid #2B151C; border-radius: 999px; font-size: 16px; font-weight: 600; text-decoration: none; color: #2B151C">Ir a la tienda</a>
+</div>
+</div>
+</section>
 
-  <!-- ACCESO -->
-  <section class="access-section">
-    <div class="access-grid">
-      <a href="obrasencurso.html" class="access-card">
-        <h2>Clientes</h2>
-        <p>Accede a tu portal de proyectos. Sigue el avance de tu obra, revisa documentos y comunícate con nuestro equipo en tiempo real.</p>
-        <div class="arrow">→</div>
-      </a>
+<!-- Three doors -->
+<section style="border-top: 1px solid #CFCDC6; border-bottom: 1px solid #CFCDC6">
+<div style="max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr))">
+<a href="servicios.html" style="padding: 40px 24px; display: flex; flex-direction: column; gap: 14px; text-decoration: none; color: #2B151C; border-right: 1px solid #CFCDC6">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #55574F">01</span>
+<span style="font-size: 32px; font-weight: 700; letter-spacing: -0.02em">Servicios</span>
+<span style="font-size: 16px; line-height: 1.5; color: #3D3F39">Diseño, planos de obra, visualización 3D, renders y digitalización.</span>
+<span style="font-size: 15px; font-weight: 600">Qué hacemos →</span>
+</a>
+<a href="tienda.html" style="padding: 40px 24px; display: flex; flex-direction: column; gap: 14px; text-decoration: none; color: #2B151C">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #55574F">02</span>
+<span style="font-size: 32px; font-weight: 700; letter-spacing: -0.02em">Tienda</span>
+<span style="font-size: 16px; line-height: 1.5; color: #3D3F39">Cuadernos diseñados y fabricados en Argentina.</span>
+<span style="font-size: 15px; font-weight: 600">Comprar →</span>
+</a>
+</div>
+</section>
 
-      <a href="proveedores.html" class="access-card">
-        <h2>Proveedores</h2>
-        <p>Red de fabricantes, contratistas y servicios profesionales. Coordina la ejecución de proyectos de diseño e interiorismo.</p>
-        <div class="arrow">→</div>
-      </a>
-    </div>
-  </section>
+<!-- Services list -->
+<section id="servicios" style="max-width: 1280px; margin: 0 auto; padding: 96px 24px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 40px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #3F6E8F">Servicios</span>
+<h2 style="margin: 0; font-size: clamp(34px, 4vw, 52px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02">Cinco formas de trabajar con nosotros</h2>
+</div>
+<a href="servicios.html" style="font-size: 16px; font-weight: 600">Ver todos los servicios →</a>
+</div>
+<div style="display: flex; flex-direction: column; border-top: 1px solid #2B151C">
+<a href="servicios.html" style="display: grid; grid-template-columns: 64px minmax(0, 1.2fr) minmax(0, 2fr) 32px; gap: 20px; align-items: center; padding: 28px 0; border-bottom: 1px solid #CFCDC6; text-decoration: none; color: #2B151C">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #55574F">01</span>
+<span style="font-size: 28px; font-weight: 700; letter-spacing: -0.02em">Diseño</span>
+<span style="font-size: 16px; line-height: 1.5; color: #3D3F39">Arquitectura e interiorismo de punta a punta.</span>
+<span style="font-size: 22px">→</span>
+</a>
+<a href="servicios.html" style="display: grid; grid-template-columns: 64px minmax(0, 1.2fr) minmax(0, 2fr) 32px; gap: 20px; align-items: center; padding: 28px 0; border-bottom: 1px solid #CFCDC6; text-decoration: none; color: #2B151C">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #55574F">02</span>
+<span style="font-size: 28px; font-weight: 700; letter-spacing: -0.02em">Planos de obra</span>
+<span style="font-size: 16px; line-height: 1.5; color: #3D3F39">Documentación técnica completa para construir y tramitar.</span>
+<span style="font-size: 22px">→</span>
+</a>
+<a href="servicios.html" style="display: grid; grid-template-columns: 64px minmax(0, 1.2fr) minmax(0, 2fr) 32px; gap: 20px; align-items: center; padding: 28px 0; border-bottom: 1px solid #CFCDC6; text-decoration: none; color: #2B151C">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #55574F">03</span>
+<span style="font-size: 28px; font-weight: 700; letter-spacing: -0.02em">Visualización 3D</span>
+<span style="font-size: 16px; line-height: 1.5; color: #3D3F39">Modelos para recorrer el proyecto antes de construirlo.</span>
+<span style="font-size: 22px">→</span>
+</a>
+<a href="servicios.html" style="display: grid; grid-template-columns: 64px minmax(0, 1.2fr) minmax(0, 2fr) 32px; gap: 20px; align-items: center; padding: 28px 0; border-bottom: 1px solid #CFCDC6; text-decoration: none; color: #2B151C">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #55574F">04</span>
+<span style="font-size: 28px; font-weight: 700; letter-spacing: -0.02em">Renders</span>
+<span style="font-size: 16px; line-height: 1.5; color: #3D3F39">Imágenes fotorrealistas para presentar, vender o comunicar.</span>
+<span style="font-size: 22px">→</span>
+</a>
+<a href="servicios.html" style="display: grid; grid-template-columns: 64px minmax(0, 1.2fr) minmax(0, 2fr) 32px; gap: 20px; align-items: center; padding: 28px 0; border-bottom: 1px solid #CFCDC6; text-decoration: none; color: #2B151C">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #55574F">05</span>
+<span style="font-size: 28px; font-weight: 700; letter-spacing: -0.02em">Digitalización</span>
+<span style="font-size: 16px; line-height: 1.5; color: #3D3F39">Planos en papel y relevamientos llevados a CAD editable.</span>
+<span style="font-size: 22px">→</span>
+</a>
+</div>
+</section>
+
+<!-- Shop teaser -->
+<section style="background: #3F6E8F; color: #FFFFFF">
+<div style="max-width: 1280px; margin: 0 auto; padding: 96px 24px; display: flex">
+<div style="display: flex; flex-direction: column; gap: 22px">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #FFFFFF">Tienda Lafinur</span>
+<h2 style="margin: 0; font-size: clamp(36px, 4.5vw, 60px); font-weight: 800; letter-spacing: -0.03em; line-height: 1">Cuadernos con motivos argentinos</h2>
+<p style="margin: 0; max-width: 460px; font-size: 18px; line-height: 1.55; color: #FFFFFF">Cuadernos diseñados y fabricados en Argentina. Elaborados por ilustradores y diseñadores apasionados por su oficio.</p>
+<div>
+<a href="tienda.html" style="display: inline-block; padding: 16px 26px; background: #FFFFFF; color: #2B151C; border-radius: 999px; font-size: 16px; font-weight: 600; text-decoration: none">Ver cuadernos</a>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Portals -->
+<section id="portales" style="max-width: 1280px; margin: 0 auto; padding: 96px 24px">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 24px">
+<a href="obrasencurso.html" style="padding: 36px; border: 1px solid #2B151C; border-radius: 4px; display: flex; flex-direction: column; gap: 14px; text-decoration: none; color: #2B151C">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #55574F">Clientes</span>
+<span style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em">Seguí el avance de tu obra</span>
+<span style="font-size: 16px; line-height: 1.5; color: #3D3F39">Revisá documentos y comunicate con el equipo en tiempo real.</span>
+<span style="font-size: 15px; font-weight: 600">Entrar al portal →</span>
+</a>
+<a href="proveedores.html" style="padding: 36px; border: 1px solid #2B151C; border-radius: 4px; display: flex; flex-direction: column; gap: 14px; text-decoration: none; color: #2B151C">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #55574F">Proveedores</span>
+<span style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em">Red de fabricantes y contratistas</span>
+<span style="font-size: 16px; line-height: 1.5; color: #3D3F39">Coordiná la ejecución de proyectos de diseño e interiorismo.</span>
+<span style="font-size: 15px; font-weight: 600">Entrar al portal →</span>
+</a>
+</div>
+</section>
+
 </main>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-wrap">
-    <div class="footer-grid">
-      <div class="footer-col">
-        <h4>Lafinur Studio</h4>
-        <p>Diseño y Arquitectura</p>
-      </div>
-
-      <div class="footer-col">
-        <h4>Contacto</h4>
-        <strong>Email</strong>
-        <a href="mailto:ami@lafinurstudio.com">ami@lafinurstudio.com</a>
-        <strong style="margin-top:16px">Teléfono</strong>
-        <a href="tel:+541168433307">+54 11 684 3307</a>
-      </div>
-
-      <div class="footer-col">
-        <h4>Ubicación</h4>
-        <p>Palermo, Buenos Aires</p>
-        <strong style="margin-top:16px">Horario</strong>
-        <p>Lunes a Viernes<br>10:00 - 18:00</p>
-      </div>
-
-      <div class="footer-col">
-        <h4>Accesos</h4>
-        <a href="obrasencurso.html">Portal Clientes</a>
-        <a href="proveedores.html">Portal Proveedores</a>
-        <a href="privacidad.html">Política de Privacidad</a>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>&copy; 2026 Lafinur Studio. Todos los derechos reservados. · <a href="privacidad.html" style="color:rgba(255,255,255,.6);text-decoration:underline">Política de Privacidad</a></p>
-      <p>Diseño profesional | lafinurstudio.com</p>
-    </div>
-  </div>
+<footer id="contacto" style="background: #2B151C; color: #F2F1EE">
+<div style="max-width: 1280px; margin: 0 auto; padding: 72px 24px 32px; display: flex; flex-direction: column; gap: 56px">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 40px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<img src="img/logo-claro.png" alt="Lafinur Studio" width="231" height="60" style="height: 60px; width: auto; display: block; align-self: flex-start; margin-bottom: 6px">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #BDBCB5">Arquitectura &amp; Diseño</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px; font-size: 15px; line-height: 1.5">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #BDBCB5">Contacto</span>
+<a href="mailto:ami@lafinurstudio.com" style="color: #F2F1EE">ami@lafinurstudio.com</a>
+<a href="tel:+541168433307" style="color: #F2F1EE">+54 11 684 3307</a>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px; font-size: 15px; line-height: 1.5">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #BDBCB5">Estudio</span>
+<span>Palermo, Buenos Aires</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px; font-size: 15px; line-height: 1.5">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #BDBCB5">Sitio</span>
+<a href="servicios.html" style="color: #F2F1EE">Servicios</a>
+<a href="tienda.html" style="color: #F2F1EE">Tienda</a>
+<a href="obrasencurso.html" style="color: #F2F1EE">Portal clientes</a>
+<a href="proveedores.html" style="color: #F2F1EE">Portal proveedores</a>
+<a href="privacidad.html" style="color: #F2F1EE">Política de privacidad</a>
+</div>
+</div>
+<div style="border-top: 1px solid #4A3239; padding-top: 24px; font-size: 13px; color: #BDBCB5">© 2026 Lafinur Studio. Todos los derechos reservados.</div>
+</div>
 </footer>
-
 </body>
 </html>
